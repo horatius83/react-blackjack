@@ -1,21 +1,26 @@
 import logo from './logo.svg';
 import './App.css';
+import Card from './models/card.js'
 
 function CardComponent(props) {
+  const cardClass = `card ${props.card.color}`;
   return (
     <>
-      <h1>Card Component</h1>
+      <span className={cardClass}>{props.card.unicodeChar}</span>
     </>
   )
 }
 
 function HandComponent(props) {
+  const cards = [
+    new Card('Ace', 'Spades', true),
+    new Card('Ace', 'Hearts', true),
+    new Card('2', 'Clubs', false)
+  ];
   return (
     <>
       <h1>Hand Component</h1>
-      <CardComponent />
-      <CardComponent />
-      <CardComponent />
+      {cards.map((x,i) => <CardComponent key={i} card={x} />)}
     </>
   )
 }
