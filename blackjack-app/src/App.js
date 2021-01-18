@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
-import Card from './models/card.js'
+import Player from './models/player.js'
+import Deck from './models/deck.js'
 
 function CardComponent(props) {
   const cardClass = `card ${props.card.color}`;
@@ -12,23 +13,23 @@ function CardComponent(props) {
 }
 
 function HandComponent(props) {
-  const cards = [
-    new Card('Ace', 'Spades', true),
-    new Card('Ace', 'Hearts', true),
-    new Card('2', 'Clubs', false)
-  ];
   return (
     <>
-      <h1>Hand Component</h1>
-      {cards.map((x,i) => <CardComponent key={i} card={x} />)}
+      <h1>{props.player.name}</h1>
+      {props.player.deck.cards.map((x,i) => <CardComponent key={i} card={x} />)}
     </>
   )
 }
 
 function App() {
+  const deck = new Deck();
+  deck.shuffle();
+  const player = new Player("Max", new Deck(deck.deal().concat(deck.deal())), true);
+  const dealer = new Player("Dealer", new Deck(deck.deal().concat(deck.deal())), false);
   return (
     <div className="App">
-      <HandComponent />
+      <HandComponent player={dealer} />
+      <HandComponent player={player} />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
