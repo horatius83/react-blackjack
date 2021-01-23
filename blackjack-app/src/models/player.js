@@ -17,4 +17,8 @@ export default class Player {
     }
     return this._deck;
   }
+
+  dealTo(otherDeck, count) {
+    
+  }
 }
