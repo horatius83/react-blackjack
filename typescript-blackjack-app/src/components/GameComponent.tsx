@@ -4,6 +4,18 @@ import { HandComponent } from './HandComponent';
 import { PlayerControlsComponent } from './PlayerControlsComponent';
 
 export function GameComponent(props: {game: Game}) {
+  const gameState = {
+    dealer: {
+      name: 'Dealer',
+      cards: []
+    },
+    player: {
+      name: 'Max',
+      cash: 100,
+      cards: []
+    },
+    deck: []
+  };
   const [game, setGame] = useState(props.game);
   const hit = () => {
     console.log('hit');
