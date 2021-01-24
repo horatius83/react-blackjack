@@ -10,13 +10,10 @@ import { GameComponent } from './components/GameComponent';
 
 
 function App() {
-  const deck = new Deck([
-    new Card(Rank.Ace, Suit.Spades),
-    new Card(Rank.King, Suit.Hearts)
-  ]);
-  const player = new Player("Max", deck, 100);
+  const player = new Player("Max", new Deck(), 100);
   const dealer = new Player("Dealer", new Deck(), 1000);
   const game = new Game(dealer, player, [], newDeck())
+  game.startRound();
 
   return (
     <div className="App">
