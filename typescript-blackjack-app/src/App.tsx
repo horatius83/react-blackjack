@@ -1,8 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Card, Rank, Suit } from './models/card';
-import { HandComponent } from './components/HandComponent';
 import Player from './models/player';
 import Deck, { newDeck } from './models/deck';
 import { Game } from './models/game';

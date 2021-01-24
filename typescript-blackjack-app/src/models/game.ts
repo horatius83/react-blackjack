@@ -42,7 +42,7 @@ export class Game {
     }
 
     hit() {
-
+        this.dealTo(this._player);
     }
 
     stay() {
