@@ -53,11 +53,7 @@ function GameComponent(props) {
       <HandComponent player={props.game.player} />
       {props.game.otherPlayers.map((x, i) => <HandComponent key={i} player={x} />)}
       <PlayerControlsComponent 
-        hit={props.game.hit} 
-        stay={props.game.stay} 
-        split={props.game.split} 
-        insurance={props.game.insurance} 
-        doubleDown={props.game.doubleDown} />
+        game={props.game} />
     </div>
   );
 }
@@ -65,11 +61,11 @@ function GameComponent(props) {
 function PlayerControlsComponent(props) {
   return (
     <span>
-      <button onClick={props.hit}>Hit</button>
-      <button onClick={props.stay}>Stay</button>
-      <button onClick={props.split}>Split</button>
-      <button onClick={props.insurance}>Insurance</button>
-      <button onClick={props.doubleDown}>Double Down</button>
+      <button onClick={props.game.hit}>Hit</button>
+      <button onClick={props.game.stay}>Stay</button>
+      <button onClick={props.game.split}>Split</button>
+      <button onClick={props.game.insurance}>Insurance</button>
+      <button onClick={props.game.doubleDown}>Double Down</button>
     </span>
   );
 }
