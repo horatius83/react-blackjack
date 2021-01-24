@@ -60,13 +60,15 @@ function GameComponent(props) {
 
 function PlayerControlsComponent(props) {
   return (
-    <span>
-      <button onClick={props.game.hit}>Hit</button>
-      <button onClick={props.game.stay}>Stay</button>
-      <button onClick={props.game.split}>Split</button>
-      <button onClick={props.game.insurance}>Insurance</button>
-      <button onClick={props.game.doubleDown}>Double Down</button>
-    </span>
+    <div>
+      <span>
+        <button onClick={props.game.hit}>Hit</button>
+        <button onClick={props.game.stay}>Stay</button>
+        <button onClick={props.game.split}>Split</button>
+        <button onClick={props.game.insurance}>Insurance</button>
+        <button onClick={props.game.doubleDown}>Double Down</button>
+      </span>
+    </div>
   );
 }
 
@@ -93,10 +95,11 @@ function App() {
   deck.shuffle();
   const player = new Player("Max", new Deck(deck.deal().concat(deck.deal())), true);
   const dealer = new Player("Dealer", new Deck(deck.deal().concat(deck.deal())), false);
+  const game = new Game(dealer, player, [], deck);
+
   return (
     <div className="App">
-      <HandComponent player={dealer} />
-      <HandComponent player={player} />
+      <GameComponent game={game} />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
