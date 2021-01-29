@@ -1,63 +1,50 @@
-import Deck from "./deck";
+import { Card } from "./card";
+import { newDeck, shuffle, deal } from "./deck";
 import Player from "./player";
 
-export class Game {
-    private _discard = new Deck();
+export interface Game {
+    dealer: {cards: Array<Card>};
+    players: Array<Player>;
+    deck: Array<Card>;
+    discard: Array<Card>;
+    bets: Map<Player, number>;
+    stays: Map<Player, boolean>;
+}
 
-    constructor(private _dealer: Player, private _player: Player, private _otherPlayers: Array<Player>, private _deck: Deck) {
-    }
+export function newGame(players: Array<Player>): Game {
+    let deck = newDeck();
+    shuffle(deck);
+    let dealersHand = new Array<Card>();
+    deal(deck, dealersHand);
+    deal(deck, dealersHand);
+    for(const player of players) {
+        deal(deck, player.hands[0]);
+        deal(deck, player.hands[0]);
+    }  
+    return {
+        dealer: {cards: dealersHand},
+        players,
+        deck,
+        discard: new Array<Card>(),
+        bets: new Map<Player, number>(players.map(p => [p, 100])),
+        stays: new Map<Player, boolean>(players.map(p => [p, false]))
+    };
+}
 
-    get dealer() {
-        return this._dealer;
-    }
-
-    get player() {
-        return this._player;
-    }
-
-    get otherPlayers() {
-        return this._otherPlayers;
-    }
-
-    dealTo(player: Player) {
-        if (!this._dealer.deck.cards.length) {
-            this._dealer.deck.addCards(this._discard.cards);
-            this._dealer.deck.shuffle();
-            this._discard.cards.length = 0;
+export function hit(player: Player, game: Game, hand: number = 0) {
+    if (!deal(game.deck, player.hands[hand])) {
+        game.deck = game.discard;
+        game.discard = new Array<Card>();
+        if(!deal(game.deck, player.hands[hand])) {
+            console.log('hit: Could not deal card');
         }
-        if(!this._deck.cards.length) {
-            this._deck.addCards(this._discard.cards);
-            this._deck.shuffle();
-            this._discard.cards.length = 0;
-        }
-        player.deck.addCards(this._deck.deal(1));
     }
+}
 
-    startRound() {
-        // Deal cards        
-        this.dealTo(this._player);
-        this.dealTo(this._dealer);
-        this.dealTo(this._player);
-        this.dealTo(this._dealer);
-    }
+export function stay(player: Player, game: Game) {
+    game.stays.set(player, true);
 
-    hit() {
-        this.dealTo(this._player);
-    }
-
-    stay() {
-
-    }
-
-    split() {
-
-    }
-
-    insurance() {
-
-    }
-
-    doubleDown() {
-
+    if([...game.stays.values()].every(x => x)) {
+        /// %$#$@ iterators
     }
 }
