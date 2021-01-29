@@ -1,17 +1,15 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Player from './models/player';
-import Deck, { newDeck } from './models/deck';
-import { Game } from './models/game';
+import { newPlayer } from './models/player';
+import { newDeck } from './models/deck';
+import { newGame } from './models/game';
 import { GameComponent } from './components/GameComponent';
 
 
 function App() {
-  const player = new Player("Max", new Deck(), 100);
-  const dealer = new Player("Dealer", new Deck(), 1000);
-  const game = new Game(dealer, player, [], newDeck())
-  game.startRound();
+  const player = newPlayer("Max", 1000); 
+  const game = newGame([player]);
 
   return (
     <div className="App">

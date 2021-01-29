@@ -1,32 +1,21 @@
 import React, { useState } from 'react';
-import { Game } from '../models/game';
+import * as blackjack from '../models/game';
+import Player from '../models/player';
 import { HandComponent } from './HandComponent';
 import { PlayerControlsComponent } from './PlayerControlsComponent';
 
-export function GameComponent(props: {game: Game}) {
-  const gameState = {
-    dealer: {
-      name: 'Dealer',
-      cards: []
-    },
-    player: {
-      name: 'Max',
-      cash: 100,
-      cards: []
-    },
-    deck: []
-  };
+export function GameComponent(props: {game: blackjack.Game}) {
   const [game, setGame] = useState(props.game);
+
   const hit = () => {
     console.log('hit');
-    game.hit();
-    debugger;
-    setGame(game);
+    let newGame = {...game}; 
+    // Need a way for different players to hit
+    blackjack.hit(game.players[0], newGame);
+    setGame(newGame);
   };
   const stay = () => {
     console.log('stay');
-    game.stay();
-    setGame(game);
   };
   const split = () => {
     console.log('split')
@@ -40,9 +29,8 @@ export function GameComponent(props: {game: Game}) {
 
   return (
     <div className="game">
-      <HandComponent player={props.game.dealer} showAll={false}/>
-      <HandComponent player={props.game.player} showAll={true}/>
-      {props.game.otherPlayers.map((x, i) => <HandComponent key={i} player={x} showAll={false}/>)}
+      <HandComponent name="Dealer" hand={props.game.dealer.cards} showAll={false}/>
+      <HandComponent name={props.game.players[0].name} hand={props.game.players[0].hands[0]} showAll={true}/>
       <PlayerControlsComponent 
         hit={hit}     
         stay={stay}

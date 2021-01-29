@@ -44,7 +44,7 @@ export function hit(player: Player, game: Game, hand: number = 0) {
 export function stay(player: Player, game: Game) {
     game.stays.set(player, true);
 
-    if([...game.stays.values()].every(x => x)) {
-        /// %$#$@ iterators
+    if(Array.from(game.stays.values()).every(x => x)) {
+        // dealer plays
     }
 }

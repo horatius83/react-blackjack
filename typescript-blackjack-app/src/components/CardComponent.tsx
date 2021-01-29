@@ -1,11 +1,13 @@
 import React from 'react';
-import { Card } from '../models/card'
+import { Card, getColor, getUnicodeChar } from '../models/card'
 
 export function CardComponent(props: { card: Card; }) {
-  const cardClass = `card ${props.card.color}`;
+  const cardColor = getColor(props.card);
+  const cardClass = `card ${cardColor}`;
+  const cardDisplay = getUnicodeChar(props.card);
   return (
     <>
-      <span className={cardClass}>{props.card.unicodeChar}</span>
+      <span className={cardClass}>{cardDisplay}</span>
     </>
   )
 }

@@ -1,18 +1,18 @@
 import React from 'react';
-import Player from '../models/player';
+import { Card } from '../models/card';
 import { CardBackComponent } from './CardBackComponent';
 import { CardComponent } from './CardComponent';
 
-export function HandComponent(props: {player: Player, showAll: boolean}) {
+export function HandComponent(props: {hand: Array<Card>, name: string, showAll: boolean}) {
   function getHand() {
     if(props.showAll) {
-      return props.player.deck.cards.map((x,i) => <CardComponent key={i} card={x} />)
+      return props.hand.map((x,i) => <CardComponent key={i} card={x} />)
     } else {
-      if(props.player.deck.cards.length) {
+      if(props.hand.length) {
         return (
           <>
             <CardBackComponent />
-            {props.player.deck.cards.slice(1).map((x,i) => <CardComponent key={i} card={x} />)}
+            {props.hand.slice(1).map((x,i) => <CardComponent key={i} card={x} />)}
           </>
         );
       }
@@ -20,7 +20,7 @@ export function HandComponent(props: {player: Player, showAll: boolean}) {
   }
   return (
     <>
-      <h1>{props.player.name}</h1>
+      <h1>{props.name}</h1>
       {getHand()}
     </>
   )
