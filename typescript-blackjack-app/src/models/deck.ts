@@ -1,14 +1,13 @@
-import {Rank, Suit, Card} from './card'
+import {Card, getRanks, getSuits} from './card'
 
 export function newDeck(): Array<Card> {
-    let cards = new Array<Card>();
-    for(let rankKey in Rank) {
-        const rank = Rank[rankKey as keyof typeof Rank];
-        for(let suit in Suit) {
-            cards.push({rank, suit: Suit[suit as keyof typeof Suit]})
-        }
+  let cards = new Array<Card>();
+  for(let rank of getRanks()) {
+    for(let suit of getSuits()) {
+      cards.push({rank, suit});
     }
-    return cards;
+  }
+  return cards;
 }
 
 export function shuffle(cards: Array<Card>): void {
@@ -21,10 +20,10 @@ export function shuffle(cards: Array<Card>): void {
   }
 }
 
-export function deal(deckFrom: Array<Card>, deckTo: Array<Card>): boolean {
-  const card = deckFrom.pop();
+export function deal(from: Array<Card>, to: Array<Card>): boolean {
+  const card = from.pop();
   if(card != undefined) {
-    deckTo.push(card);
+    to.push(card);
     return true;
   } 
   return false;
