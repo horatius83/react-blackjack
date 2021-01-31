@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import * as blackjack from '../models/game';
 import Player from '../models/player';
-import { HandComponent } from './HandComponent';
+import { HandsComponent } from './HandsComponent';
 import { PlayerControlsComponent } from './PlayerControlsComponent';
+import { DealerComponent } from './DealerComponent';
 
 export function GameComponent(props: {game: blackjack.Game}) {
   const [game, setGame] = useState(props.game);
@@ -29,8 +30,8 @@ export function GameComponent(props: {game: blackjack.Game}) {
 
   return (
     <div className="game">
-      <HandComponent name="Dealer" hand={props.game.dealer.cards} showAll={false}/>
-      <HandComponent name={props.game.players[0].name} hand={props.game.players[0].hands[0]} showAll={true}/>
+      <DealerComponent  cards={props.game.dealer.cards} />
+      <HandsComponent name={props.game.players[0].name} hands={props.game.players[0].hands} showAll={true}/>
       <PlayerControlsComponent 
         hit={hit}     
         stay={stay}

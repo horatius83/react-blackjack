@@ -1,8 +1,9 @@
 import { Card } from './card'
+import { Hand } from './hand'
 
 export default interface Player {
   name: string;
-  hands: Array<Array<Card>>;
+  hands: Array<Hand>;
   money: number;
 }
 
@@ -10,6 +11,6 @@ export function newPlayer(name: string, money: number): Player {
   return {
     name,
     money,
-    hands: [new Array<Card>()]
+    hands: [{cards: new Array<Card>(), bet: 0}]
   }
 }
