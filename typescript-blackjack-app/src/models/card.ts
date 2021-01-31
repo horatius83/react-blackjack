@@ -80,3 +80,7 @@ export function getUnicodeChar(card: Card): string {
 export function getColor(card: Card): string {
     return suitMap.get(card.suit)?.color as string;
 }
+
+export function getValues(card: Card): Array<number> {
+    return rankMap.get(card.rank)?.values as Array<number>;
+}
