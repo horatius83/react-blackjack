@@ -1,5 +1,5 @@
 import { Card } from "./card";
-import { newDeck, shuffle, deal, getValues } from "./deck";
+import { newDecks, shuffle, deal, getValues } from "./deck";
 import Player from "./player";
 
 export interface Game {
@@ -12,15 +12,26 @@ export interface Game {
     maximumBet: number;
     blackJackPayout: number;
     numberOfSplits: number;
+    numberOfDecks: number;
 }
 
-export function newGame(players: Array<Player>, minimumBet: number, maximumBet: number, blackJackPayout: number, numberOfSplits: number): Game {
-    let deck = newDeck();
+export function newGame(
+    players: Array<Player>, 
+    minimumBet: number, 
+    maximumBet: number, 
+    blackJackPayout: number, 
+    numberOfSplits: number, 
+    numberOfDecks: number
+): Game {
+    let deck = newDecks(numberOfDecks);
     shuffle(deck);
     let dealersHand = new Array<Card>();
     deal(deck, dealersHand);
     deal(deck, dealersHand);
     for(const player of players) {
+        player.hands.length = 1;
+        player.hands[0].bet = minimumBet;
+        player.money -= minimumBet;
         deal(deck, player.hands[0].cards);
         deal(deck, player.hands[0].cards);
     }  
@@ -33,7 +44,8 @@ export function newGame(players: Array<Player>, minimumBet: number, maximumBet: 
         minimumBet,
         maximumBet,
         blackJackPayout,
-        numberOfSplits
+        numberOfSplits,
+        numberOfDecks
     };
 }
 
@@ -72,6 +84,7 @@ export function stay(player: Player, game: Game) {
                 if (handValues.length) {
                     player.money += hand.bet;
                 } 
+                hand.bet = 0;
             })
         }
     }

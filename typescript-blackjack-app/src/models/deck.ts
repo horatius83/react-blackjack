@@ -1,10 +1,16 @@
 import * as card from './card'
 
-export function newDeck(): Array<card.Card> {
+export function newDecks(numberOfDecks: number): Array<card.Card> {
+  if(!numberOfDecks || numberOfDecks < 1) {
+    console.log(`Number of decks was ${numberOfDecks}`);
+    return [];
+  }
   let cards = new Array<card.Card>();
-  for(let rank of card.getRanks()) {
-    for(let suit of card.getSuits()) {
-      cards.push({rank, suit});
+  for(let deck=0; deck < numberOfDecks; deck++) {
+    for(let rank of card.getRanks()) {
+      for(let suit of card.getSuits()) {
+        cards.push({rank, suit});
+      }
     }
   }
   return cards;

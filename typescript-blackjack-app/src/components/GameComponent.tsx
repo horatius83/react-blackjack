@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import * as blackjack from '../models/game';
-import Player from '../models/player';
 import { HandsComponent } from './HandsComponent';
 import { PlayerControlsComponent } from './PlayerControlsComponent';
 import { DealerComponent } from './DealerComponent';
+import { newPlayer } from '../models/player';
 
-export function GameComponent(props: {game: blackjack.Game}) {
-  const [game, setGame] = useState(props.game);
+export function GameComponent() {
+  const player = newPlayer("Max", 1000); 
+  const [game, setGame] = useState(blackjack.newGame([player], 100, 1000, 3.0/2.0, 1, 2));
 
   const hit = () => {
     console.log('hit');
@@ -30,8 +31,8 @@ export function GameComponent(props: {game: blackjack.Game}) {
 
   return (
     <div className="game">
-      <DealerComponent  cards={props.game.dealer.cards} />
-      <HandsComponent name={props.game.players[0].name} hands={props.game.players[0].hands} showAll={true}/>
+      <DealerComponent  cards={game.dealer.cards} />
+      <HandsComponent name={game.players[0].name} hands={game.players[0].hands} showAll={true}/>
       <PlayerControlsComponent 
         hit={hit}     
         stay={stay}
