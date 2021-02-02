@@ -15,6 +15,18 @@ export interface Game {
     numberOfDecks: number;
 }
 
+function dealCard(deck: Array<Card>, to: Array<Card>, discard: Array<Card>): boolean {
+    if(!deal(deck, to)) {
+        deck = discard;
+        discard = [];
+        if(!deal(deck, to)) {
+            console.log("Could not deal card!");
+            return false;
+        }
+    }
+    return true;
+}
+
 export function newGame(
     players: Array<Player>, 
     minimumBet: number, 
@@ -23,23 +35,24 @@ export function newGame(
     numberOfSplits: number, 
     numberOfDecks: number
 ): Game {
+    let discard = new Array<Card>();
     let deck = newDecks(numberOfDecks);
     shuffle(deck);
     let dealersHand = new Array<Card>();
-    deal(deck, dealersHand);
-    deal(deck, dealersHand);
+    dealCard(deck, dealersHand, discard);
+    dealCard(deck, dealersHand, discard);
     for(const player of players) {
         player.hands.length = 1;
         player.hands[0].bet = minimumBet;
         player.money -= minimumBet;
-        deal(deck, player.hands[0].cards);
-        deal(deck, player.hands[0].cards);
+        dealCard(deck, player.hands[0].cards, discard);
+        dealCard(deck, player.hands[0].cards, discard);
     }  
     return {
         dealer: {cards: dealersHand},
         players,
         deck,
-        discard: new Array<Card>(),
+        discard,
         stays: new Map<Player, boolean>(players.map(p => [p, false])),
         minimumBet,
         maximumBet,
@@ -57,6 +70,12 @@ export function hit(player: Player, game: Game, hand: number = 0) {
             console.log('hit: Could not deal card');
         }
     }
+    // If value exceeds 21 then mark it as a stay
+    const valueLessThan21 = Array.from(getValues(player.hands[hand].cards))
+        .some(x => x < 21);
+    if(!valueLessThan21) {
+        game.stays.set(player, true);
+    }
 }
 
 export function stay(player: Player, game: Game) {
@@ -66,7 +85,9 @@ export function stay(player: Player, game: Game) {
         // dealer plays
         let dealerValues = Array.from(getValues(game.dealer.cards))
             .filter(x => x <= 21);
-        let dealerMaxValue = dealerValues.reduce((max, x) => x > max ? x : max);
+        let dealerMaxValue = dealerValues.length 
+            ? dealerValues.reduce((max, x) => x > max ? x : max)
+            : 0
         while(dealerValues.length > 0 && dealerMaxValue < 17) {
             deal(game.deck, game.dealer.cards);
             dealerValues = Array.from(getValues(game.dealer.cards))
