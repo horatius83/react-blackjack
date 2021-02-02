@@ -15,7 +15,11 @@ export interface Game {
     numberOfDecks: number;
 }
 
-function dealCard(deck: Array<Card>, to: Array<Card>, discard: Array<Card>): boolean {
+export function dealCard(
+    deck: Array<Card>, 
+    to: Array<Card>, 
+    discard: Array<Card>): boolean {
+
     if(!deal(deck, to)) {
         deck = discard;
         discard = [];

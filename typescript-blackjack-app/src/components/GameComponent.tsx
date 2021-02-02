@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import * as blackjack from '../models/game';
 import { HandsComponent } from './HandsComponent';
-import { PlayerControlsComponent } from './PlayerControlsComponent';
 import { DealerComponent } from './DealerComponent';
 import { newPlayer } from '../models/player';
-import { deal } from '../models/deck';
 
 export function GameComponent() {
   const player = newPlayer("Max", 1000); 
@@ -27,12 +25,16 @@ export function GameComponent() {
       .every(x => x);
     if(allPlayersHaveStayed) { // New Round
       game.dealer.cards.length = 0;
+      blackjack.dealCard(game.deck, game.dealer.cards, game.discard);
+      blackjack.dealCard(game.deck, game.dealer.cards, game.discard);
       for (const player of game.players) {
         player.hands.length = 1
         player.hands[0].cards.length = 0;
-      }
-      const cardsNeeded = 2 + game.players.length * 2;
 
+        // deal new cards
+        blackjack.dealCard(game.deck, player.hands[0].cards, game.discard);
+        blackjack.dealCard(game.deck, player.hands[0].cards, game.discard);
+      }
     }
     setGame(newGame);
   };
