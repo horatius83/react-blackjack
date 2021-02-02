@@ -21,6 +21,7 @@ export function dealCard(
     discard: Array<Card>): boolean {
 
     if(!deal(deck, to)) {
+        console.log('Shuffling...');
         deck = discard;
         discard = [];
         if(!deal(deck, to)) {
