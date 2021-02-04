@@ -58,6 +58,7 @@ export function GameComponent() {
         game.players[0].name} 
         hands={game.players[0].hands} 
         showAll={true}
+        money={game.players[0].money}
         hit={hit}
         showHit={showHit}
         stay={stay}

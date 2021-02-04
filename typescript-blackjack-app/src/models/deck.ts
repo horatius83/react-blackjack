@@ -44,7 +44,7 @@ export function getValues(cards: Array<card.Card>): Set<number> {
     const firstCard = cards[index];
     for (const v of card.getValues(firstCard)) {
       const values = f(cards, index + 1);
-      allValues.forEach(vv => allValues.add(v + vv))
+      values.forEach(vv => allValues.add(v + vv));
     }
     return allValues;
   }

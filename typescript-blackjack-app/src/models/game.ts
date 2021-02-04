@@ -96,7 +96,7 @@ export function stay(player: Player, game: Game) {
         while(dealerValues.length > 0 && dealerMaxValue < 17) {
             deal(game.deck, game.dealer.cards);
             dealerValues = Array.from(getValues(game.dealer.cards))
-                .filter(x => x > 21);
+                .filter(x => x <= 21);
             dealerMaxValue = dealerValues.length
                 ? dealerValues.reduce((max, x) => x > max ? x : max)
                 : 0;
@@ -105,12 +105,16 @@ export function stay(player: Player, game: Game) {
         // Pay out bets
         for (const player of game.players) {
             player.hands.forEach(hand => {
+                console.log(`Player: ${player.name} $${player.money}`);
+                const allValues = Array.from(getValues(hand.cards));
                 const handValues = Array.from(getValues(hand.cards))
                     .filter(v => v <= 21 && v > dealerMaxValue);
                 if (handValues.length) {
                     player.money += hand.bet;
                 } 
-                hand.bet = 0;
+                player.money -= game.minimumBet;
+                hand.bet = game.minimumBet;
+                console.log(`Player: ${player.name} $${player.money}`);
             })
         }
     }
