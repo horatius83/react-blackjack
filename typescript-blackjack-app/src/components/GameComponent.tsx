@@ -15,7 +15,7 @@ export function GameComponent() {
     blackjack.hit(game.players[0], newGame);
     setGame(newGame);
   };
-  const showHit = () => { return true; }
+  const showHit = () => { return !game.isRoundOver; }
   const stay = () => {
     console.log('stay');
     let newGame = {...game}; 
@@ -51,24 +51,34 @@ export function GameComponent() {
   };
   const showDoubleDown = () => { return true; }
 
-  return (
-    <div className="game">
-      <DealerComponent  cards={game.dealer.cards} />
-      <HandsComponent name={
-        game.players[0].name} 
-        hands={game.players[0].hands} 
-        showAll={true}
-        money={game.players[0].money}
-        hit={hit}
-        showHit={showHit}
-        stay={stay}
-        split={split}
-        showSplit={showSplit}
-        insurance={insurance}
-        showInsurance={showInsurance}
-        doubleDown={doubleDown}
-        showDoubleDown={showDoubleDown}
-      />
-    </div>
-  );
+  const displayComponent = (game: blackjack.Game) => {
+    if(game.isRoundOver) {
+      return (
+        <h1>Round Over Yo</h1>
+      );
+    } else {
+      return (
+        <div className="game">
+          <DealerComponent  cards={game.dealer.cards} />
+          <HandsComponent name={
+            game.players[0].name} 
+            hands={game.players[0].hands} 
+            showAll={true}
+            money={game.players[0].money}
+            hit={hit}
+            showHit={showHit}
+            stay={stay}
+            split={split}
+            showSplit={showSplit}
+            insurance={insurance}
+            showInsurance={showInsurance}
+            doubleDown={doubleDown}
+            showDoubleDown={showDoubleDown}
+          />
+        </div>
+      ); 
+    }
+  }
+
+  return displayComponent(game);
 }

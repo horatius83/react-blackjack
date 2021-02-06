@@ -13,6 +13,7 @@ export interface Game {
     blackJackPayout: number;
     numberOfSplits: number;
     numberOfDecks: number;
+    isRoundOver: boolean;
 }
 
 export function dealCard(
@@ -63,7 +64,8 @@ export function newGame(
         maximumBet,
         blackJackPayout,
         numberOfSplits,
-        numberOfDecks
+        numberOfDecks,
+        isRoundOver: false
     };
 }
 
@@ -76,10 +78,11 @@ export function hit(player: Player, game: Game, hand: number = 0) {
         }
     }
     // If value exceeds 21 then mark it as a stay
-    const valueLessThan21 = Array.from(getValues(player.hands[hand].cards))
-        .some(x => x < 21);
+    const allValues = Array.from(getValues(player.hands[hand].cards));
+    const valueLessThan21 = allValues.some(x => x < 21);
+    debugger;
     if(!valueLessThan21) {
-        game.stays.set(player, true);
+        stay(player, game);
     }
 }
 
@@ -106,16 +109,17 @@ export function stay(player: Player, game: Game) {
         for (const player of game.players) {
             player.hands.forEach(hand => {
                 console.log(`Player: ${player.name} $${player.money}`);
-                const allValues = Array.from(getValues(hand.cards));
                 const handValues = Array.from(getValues(hand.cards))
                     .filter(v => v <= 21 && v > dealerMaxValue);
                 if (handValues.length) {
-                    player.money += hand.bet;
+                    player.money += hand.bet * 2;
                 } 
                 player.money -= game.minimumBet;
                 hand.bet = game.minimumBet;
                 console.log(`Player: ${player.name} $${player.money}`);
             })
         }
+        // round end
+        game.isRoundOver = true;
     }
 }
