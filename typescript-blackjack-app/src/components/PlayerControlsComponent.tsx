@@ -1,5 +1,4 @@
 import React from 'react';
-import Player from '../models/player';
 
 export function PlayerControlsComponent(props: {
     hit: () => void, 

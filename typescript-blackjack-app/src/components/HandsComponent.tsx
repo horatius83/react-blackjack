@@ -9,7 +9,7 @@ export function HandsComponent(props: {
   name: string, 
   showAll: boolean,
   money: number,
-  hit: () => void, 
+  hit: (hand: Hand) => void, 
   showHit: () => boolean,
   stay: () => void,
   split: () => void,
@@ -32,7 +32,7 @@ export function HandsComponent(props: {
         { hand.cards.slice(sliceIndex).map((x,i) => <CardComponent key={i} card={x} />) }
         <div>Bet: ${hand.bet} Money: ${props.money}</div>
         <PlayerControlsComponent 
-          hit={props.hit}
+          hit={() => props.hit(hand)}
           showHit={props.showHit}
           stay={props.stay}
           split={props.split}

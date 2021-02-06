@@ -3,16 +3,17 @@ import * as blackjack from '../models/game';
 import { HandsComponent } from './HandsComponent';
 import { DealerComponent } from './DealerComponent';
 import { newPlayer } from '../models/player';
+import { Hand } from '../models/hand';
 
 export function GameComponent() {
   const player = newPlayer("Max", 1000); 
   const [game, setGame] = useState(blackjack.newGame([player], 100, 1000, 3.0/2.0, 1, 2));
 
-  const hit = () => {
+  const hit = (hand: Hand) => {
     console.log('hit');
     let newGame = {...game}; 
     // Need a way for different players to hit
-    blackjack.hit(game.players[0], newGame);
+    blackjack.hit(game.players[0], newGame, hand);
     setGame(newGame);
   };
   const showHit = () => { return !game.isRoundOver; }

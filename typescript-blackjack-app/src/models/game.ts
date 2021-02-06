@@ -1,5 +1,6 @@
 import { Card } from "./card";
 import { newDecks, shuffle, deal, getValues } from "./deck";
+import { Hand } from "./hand";
 import Player from "./player";
 
 export interface Game {
@@ -69,16 +70,16 @@ export function newGame(
     };
 }
 
-export function hit(player: Player, game: Game, hand: number = 0) {
-    if (!deal(game.deck, player.hands[hand].cards)) {
+export function hit(player: Player, game: Game, hand: Hand) {
+    if (!deal(game.deck, hand.cards)) {
         game.deck = game.discard;
         game.discard = new Array<Card>();
-        if(!deal(game.deck, player.hands[hand].cards)) {
+        if(!deal(game.deck, hand.cards)) {
             console.log('hit: Could not deal card');
         }
     }
     // If value exceeds 21 then mark it as a stay
-    const allValues = Array.from(getValues(player.hands[hand].cards));
+    const allValues = Array.from(getValues(hand.cards));
     const valueLessThan21 = allValues.some(x => x < 21);
     debugger;
     if(!valueLessThan21) {

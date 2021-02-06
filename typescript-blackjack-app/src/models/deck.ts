@@ -28,7 +28,7 @@ export function shuffle(cards: Array<card.Card>): void {
 
 export function deal(from: Array<card.Card>, to: Array<card.Card>): boolean {
   const card = from.pop();
-  if(card != undefined) {
+  if(card !== undefined) {
     to.push(card);
     return true;
   } 
