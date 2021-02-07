@@ -4,43 +4,6 @@ import { HandsComponent } from './HandsComponent';
 import { DealerComponent } from './DealerComponent';
 import { newPlayer } from '../models/player';
 import { Hand } from '../models/hand';
-import { getValues } from '../models/deck';
-
-const getRoundSummary = (game: blackjack.Game) => {
-  console.log('getRoundSummary');
-  const dealerHandValue = Array.from(getValues(game.dealer.cards))
-    .filter(v => v <= 21)
-    .reduce((x,y) => x > y ? x : y, 0);
-  const playerHandValues = game.players[0].hands.map(h => 
-    Array.from(getValues(h.cards))
-      .filter(v => v <= 21)
-      .reduce((x,y) => x > y ? x : y, 0)
-  );
-  const nWinningPlayerHands = playerHandValues.filter(hv => hv > dealerHandValue);
-  if(nWinningPlayerHands.length > 0) {
-    // player wins
-    if(nWinningPlayerHands.length === 1) {
-      return `${game.players[0].name} Wins`;
-    } else {
-      return `${game.players[0].name} wins ${nWinningPlayerHands.length} hands`;
-    }
-  } else if(playerHandValues.some(hv => hv === dealerHandValue)){ 
-    // push
-    return "Push";
-  } else {
-    // dealer wins
-    if(dealerHandValue <= 21) {
-      if(playerHandValues.some(x => x < 21 && x !== 0)) {
-        return "Dealer Wins";
-      } else {
-        return `Dealer Wins (${game.players[0].name} busted)`;
-      }
-    } else {
-      return "Both Busted";
-    }
-  }
-  // player wins with Blackjack
-};
 
 const hit = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('hit');
@@ -54,41 +17,8 @@ const stay = (game: blackjack.Game, setGame: (game: React.SetStateAction<blackja
   console.log('stay');
   let newGame = {...game}; 
   blackjack.stay(game.players[0], newGame);
-
-  // check if we need to start a new round
-  const allPlayersHaveStayed = Array.from(game.stays.values())
-    .every(x => x);
-  if(allPlayersHaveStayed) { // New Round
-    game.isRoundOver = true;
-  }
   setGame(newGame);
 };
-
-const newRound = (game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
-    console.log('newRound');
-    let newGame = {...game}; 
-    game.dealer.cards.length = 0;
-    blackjack.dealCard(newGame.deck, newGame.dealer.cards, newGame.discard);
-    blackjack.dealCard(newGame.deck, newGame.dealer.cards, newGame.discard);
-    for (const player of game.players) {
-      player.hands.length = 1
-      player.hands[0].cards.length = 0;
-
-      // deal new cards
-      blackjack.dealCard(newGame.deck, player.hands[0].cards, newGame.discard);
-      blackjack.dealCard(newGame.deck, player.hands[0].cards, newGame.discard);
-    }
-    const playersWithBlackjacks = game.players.filter(p => blackjack.hasBlackjack(game.dealer.cards, p.hands[0].cards));
-    if(playersWithBlackjacks.length > 0) {
-      playersWithBlackjacks.forEach(p => {
-        p.money += p.hands[0].bet * game.blackJackPayout;
-      });
-      newGame.isRoundOver = true;
-    } else {
-      newGame.isRoundOver = false;
-    }
-    setGame(newGame);
-  };
 
 export function GameComponent() {
   const player = newPlayer("Max", 1000); 
@@ -113,7 +43,7 @@ export function GameComponent() {
     if(game.isRoundOver) {
       return (
         <>
-          <h1>{getRoundSummary(game)}</h1>
+          <h1>{blackjack.getRoundSummary(game)}</h1>
           <DealerComponent  cards={game.dealer.cards} showAll={true}/>
           <HandsComponent name={
             game.players[0].name} 
@@ -131,7 +61,7 @@ export function GameComponent() {
             doubleDown={doubleDown}
             showDoubleDown={() => false}
           />
-          <button onClick={() => newRound(game, setGame)}>New Round</button>
+          <button onClick={() => blackjack.newRound(game, setGame)}>New Round</button>
         </>
       );
     } else {

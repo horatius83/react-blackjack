@@ -11,6 +11,6 @@ export function newPlayer(name: string, money: number): Player {
   return {
     name,
     money,
-    hands: [{cards: new Array<Card>(), bet: 0}]
+    hands: [{cards: new Array<Card>(), bet: 0, insurance: false}]
   }
 }
