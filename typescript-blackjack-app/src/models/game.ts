@@ -131,7 +131,7 @@ const tenCards = new Set<Rank>([Rank.Ten, Rank.Jack, Rank.Queen, Rank.King]);
 export function hasBlackjack(dealer: Array<Card>, cards: Array<Card>) {
     // If the dealer is not showing an Ace or 10-card and player has a Ace and a 10-card
     return dealer.length == 2
-        && (dealer[1].rank == Rank.Ace || tenCards.has(dealer[1].rank))
+        && !(dealer[1].rank == Rank.Ace || tenCards.has(dealer[1].rank))
         && cards.length == 2 
         && cards.some(x => x.rank === Rank.Ace)
         && cards.map(c => tenCards.has(c.rank));

@@ -16,11 +16,12 @@ export function newDecks(numberOfDecks: number): Array<card.Card> {
   return cards;
 }
 
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 export function shuffle(cards: Array<card.Card>): void {
   // My attempt at a Fisher-Yates Shuffle
   if (cards.length > 1) {
     for(let i = cards.length - 1; i >= 0; i--) {
-      let j = Math.floor(Math.random() * i);
+      let j = Math.floor(Math.random() * (i+1));
       [cards[i], cards[j]] = [cards[j], cards[i]];
     }
   }
