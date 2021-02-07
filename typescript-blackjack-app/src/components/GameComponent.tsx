@@ -75,7 +75,15 @@ const newRound = (game: blackjack.Game, setGame: (game: React.SetStateAction<bla
       blackjack.dealCard(newGame.deck, player.hands[0].cards, newGame.discard);
       blackjack.dealCard(newGame.deck, player.hands[0].cards, newGame.discard);
     }
-    newGame.isRoundOver = false;
+    const playersWithBlackjacks = game.players.filter(p => blackjack.hasBlackjack(game.dealer.cards, p.hands[0].cards));
+    if(playersWithBlackjacks.length > 0) {
+      playersWithBlackjacks.forEach(p => {
+        p.money += p.hands[0].bet * game.blackJackPayout;
+      });
+      newGame.isRoundOver = true;
+    } else {
+      newGame.isRoundOver = false;
+    }
     setGame(newGame);
   };
 

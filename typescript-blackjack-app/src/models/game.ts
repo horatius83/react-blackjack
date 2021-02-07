@@ -1,4 +1,5 @@
-import { Card } from "./card";
+import { Card, Rank } from "./card";
+import * as card from "./card";
 import { newDecks, shuffle, deal, getValues } from "./deck";
 import { Hand } from "./hand";
 import Player from "./player";
@@ -122,4 +123,15 @@ export function stay(player: Player, game: Game) {
         // round end
         game.isRoundOver = true;
     }
+}
+
+const tenCards = new Set<Rank>([Rank.Ten, Rank.Jack, Rank.Queen, Rank.King]);
+
+export function hasBlackjack(dealer: Array<Card>, cards: Array<Card>) {
+    // If the dealer is not showing an Ace or 10-card and player has a Ace and a 10-card
+    return dealer.length == 2
+        && (dealer[1].rank == Rank.Ace || tenCards.has(dealer[1].rank))
+        && cards.length == 2 
+        && cards.some(x => x.rank === Rank.Ace)
+        && cards.map(c => tenCards.has(c.rank));
 }
