@@ -81,7 +81,6 @@ export function hit(player: Player, game: Game, hand: Hand) {
     // If value exceeds 21 then mark it as a stay
     const allValues = Array.from(getValues(hand.cards));
     const valueLessThan21 = allValues.some(x => x < 21);
-    debugger;
     if(!valueLessThan21) {
         stay(player, game);
     }
