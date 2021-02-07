@@ -24,6 +24,9 @@ const getRoundSummary = (game: blackjack.Game) => {
     } else {
       return `${game.players[0].name} wins ${nWinningPlayerHands.length} hands`;
     }
+  } else if(playerHandValues.some(hv => hv === dealerHandValue)){ 
+    // push
+    return "Push";
   } else {
     // dealer wins
     if(dealerHandValue <= 21) {
