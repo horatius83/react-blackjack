@@ -4,6 +4,7 @@ export function PlayerControlsComponent(props: {
     hit: () => void, 
     showHit: () => boolean,
     stay: () => void,
+    showStay: () => boolean,
     split: () => void,
     showSplit: () => boolean,
     insurance: () => void,
@@ -15,7 +16,7 @@ export function PlayerControlsComponent(props: {
     <div>
       <span>
         { props.showHit() ? <button onClick={props.hit}>Hit</button> : null }
-        <button onClick={props.stay}>Stay</button>
+        { props.showStay() ? <button onClick={props.stay}>Stay</button> : null}
         { props.showSplit() ? <button onClick={props.split}>Split</button> : null }
         { props.showInsurance() ? <button onClick={props.insurance}>Insurance</button> : null }
         { props.showDoubleDown() ? <button onClick={props.doubleDown}>Double Down</button> : null }

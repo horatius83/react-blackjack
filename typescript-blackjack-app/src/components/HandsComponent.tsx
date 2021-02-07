@@ -12,6 +12,7 @@ export function HandsComponent(props: {
   hit: (hand: Hand) => void, 
   showHit: () => boolean,
   stay: () => void,
+  showStay: () => boolean,
   split: () => void,
   showSplit: () => boolean,
   insurance: () => void,
@@ -35,6 +36,7 @@ export function HandsComponent(props: {
           hit={() => props.hit(hand)}
           showHit={props.showHit}
           stay={props.stay}
+          showStay={props.showStay}
           split={props.split}
           showSplit={props.showSplit}
           insurance={props.insurance}

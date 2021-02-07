@@ -21,24 +21,33 @@ export function GameComponent() {
     console.log('stay');
     let newGame = {...game}; 
     blackjack.stay(game.players[0], newGame);
+
     // check if we need to start a new round
     const allPlayersHaveStayed = Array.from(game.stays.values())
       .every(x => x);
     if(allPlayersHaveStayed) { // New Round
-      game.dealer.cards.length = 0;
-      blackjack.dealCard(game.deck, game.dealer.cards, game.discard);
-      blackjack.dealCard(game.deck, game.dealer.cards, game.discard);
-      for (const player of game.players) {
-        player.hands.length = 1
-        player.hands[0].cards.length = 0;
-
-        // deal new cards
-        blackjack.dealCard(game.deck, player.hands[0].cards, game.discard);
-        blackjack.dealCard(game.deck, player.hands[0].cards, game.discard);
-      }
+      game.isRoundOver = true;
     }
     setGame(newGame);
   };
+
+  const newRound = () => {
+    console.log('newRound');
+    let newGame = {...game}; 
+    game.dealer.cards.length = 0;
+    blackjack.dealCard(game.deck, game.dealer.cards, game.discard);
+    blackjack.dealCard(game.deck, game.dealer.cards, game.discard);
+    for (const player of game.players) {
+      player.hands.length = 1
+      player.hands[0].cards.length = 0;
+
+      // deal new cards
+      blackjack.dealCard(game.deck, player.hands[0].cards, game.discard);
+      blackjack.dealCard(game.deck, player.hands[0].cards, game.discard);
+    }
+    setGame(newGame);
+  };
+
   const split = () => {
     console.log('split')
   };
@@ -55,7 +64,27 @@ export function GameComponent() {
   const displayComponent = (game: blackjack.Game) => {
     if(game.isRoundOver) {
       return (
-        <h1>Round Over Yo</h1>
+        <>
+          <h1>Round Over Yo</h1>
+          <DealerComponent  cards={game.dealer.cards} />
+          <HandsComponent name={
+            game.players[0].name} 
+            hands={game.players[0].hands} 
+            showAll={true}
+            money={game.players[0].money}
+            hit={hit}
+            showHit={() => false}
+            stay={stay}
+            showStay={() => false}
+            split={split}
+            showSplit={() => false}
+            insurance={insurance}
+            showInsurance={() => false}
+            doubleDown={doubleDown}
+            showDoubleDown={() => false}
+          />
+          <button onClick={newRound}>New Round</button>
+        </>
       );
     } else {
       return (
@@ -69,6 +98,7 @@ export function GameComponent() {
             hit={hit}
             showHit={showHit}
             stay={stay}
+            showStay={() => true}
             split={split}
             showSplit={showSplit}
             insurance={insurance}
