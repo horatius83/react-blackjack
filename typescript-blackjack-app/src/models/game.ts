@@ -110,11 +110,12 @@ export function stay(player: Player, game: Game) {
         for (const player of game.players) {
             player.hands.forEach(hand => {
                 console.log(`Player: ${player.name} $${player.money}`);
-                const handValues = Array.from(getValues(hand.cards))
-                    .filter(v => v <= 21 && v > dealerMaxValue);
-                if (handValues.length) {
+                const handValues = Array.from(getValues(hand.cards));
+                if (handValues.some(x => x <= 21 && x > dealerMaxValue)) {
                     player.money += hand.bet * 2;
-                } 
+                } else if(handValues.some(x => x <= 21 && x == dealerMaxValue)) {
+                    player.money += hand.bet;
+                }
                 player.money -= game.minimumBet;
                 hand.bet = game.minimumBet;
                 console.log(`Player: ${player.name} $${player.money}`);
