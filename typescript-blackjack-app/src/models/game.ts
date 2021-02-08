@@ -154,7 +154,7 @@ export const getRoundSummary = (game: Game) => {
     } else {
       return `${game.players[0].name} wins ${nWinningPlayerHands.length} hands`;
     }
-  } else if(playerHandValues.some(hv => hv === dealerHandValue)){ 
+  } else if(playerHandValues.some(hv => hv === dealerHandValue && hv <= 21)){ 
     // push
     return "Push";
   } else {
