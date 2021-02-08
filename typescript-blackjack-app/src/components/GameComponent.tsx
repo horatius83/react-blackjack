@@ -4,6 +4,7 @@ import { HandsComponent } from './HandsComponent';
 import { DealerComponent } from './DealerComponent';
 import { newPlayer } from '../models/player';
 import { Hand } from '../models/hand';
+import { Rank } from '../models/card';
 
 const hit = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('hit');
@@ -33,7 +34,7 @@ export function GameComponent() {
   const insurance = () => {
     console.log('insurance');
   };
-  const showInsurance = () => { return true; }
+  const showInsurance = () => { return !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace }
   const doubleDown = () => {
     console.log('doubleDown');
   };

@@ -172,28 +172,30 @@ export const getRoundSummary = (game: Game) => {
   // player wins with Blackjack
 };
 
-export const newRound = (game: Game, setGame: (game: React.SetStateAction<Game>) => void) => {
+export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Game>) => void) => {
     console.log('newRound');
-    let newGame = {...game}; 
-    game.dealer.cards.length = 0;
-    dealCard(newGame.deck, newGame.dealer.cards, newGame.discard);
-    dealCard(newGame.deck, newGame.dealer.cards, newGame.discard);
+    let game = {...oldGame}; 
+    game.discard = [...game.discard, ...game.dealer.cards];
+    game.dealer.cards = [];
+    dealCard(game.deck, game.dealer.cards, game.discard);
+    dealCard(game.deck, game.dealer.cards, game.discard);
     for (const player of game.players) {
-      player.hands.length = 1
-      player.hands[0].cards.length = 0;
-
-      // deal new cards
-      dealCard(newGame.deck, player.hands[0].cards, newGame.discard);
-      dealCard(newGame.deck, player.hands[0].cards, newGame.discard);
+        for(const hand of player.hands) {
+            game.discard = [...game.discard, ...hand.cards];
+        }
+        player.hands = [{cards: [], bet: game.minimumBet, insurance: false}]
+        // deal new cards
+        dealCard(game.deck, player.hands[0].cards, game.discard);
+        dealCard(game.deck, player.hands[0].cards, game.discard);
     }
     const playersWithBlackjacks = game.players.filter(p => hasBlackjack(game.dealer.cards, p.hands[0].cards));
     if(playersWithBlackjacks.length > 0) {
       playersWithBlackjacks.forEach(p => {
         p.money += p.hands[0].bet * game.blackJackPayout;
       });
-      newGame.isRoundOver = true;
+      game.isRoundOver = true;
     } else {
-      newGame.isRoundOver = false;
+      game.isRoundOver = false;
     }
-    setGame(newGame);
+    setGame(game);
   };
