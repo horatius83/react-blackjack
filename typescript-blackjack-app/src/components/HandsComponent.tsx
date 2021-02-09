@@ -20,17 +20,17 @@ export function HandsComponent(props: {
   doubleDown: () => void,
   showDoubleDown: () => boolean
 }) {
-  function getHand(hand: Hand) {
+  function getHand(hand: Hand, index: number) {
     const sliceIndex = props.showAll ? 0 : 1;
     function getCardBack() {
       if (!props.showAll) {
-        return <CardBackComponent />
+        return <CardBackComponent key={index}/>
       } 
     }
     return (
       <>
         { getCardBack() }
-        { hand.cards.slice(sliceIndex).map((x,i) => <CardComponent key={i} card={x} />) }
+        { hand.cards.slice(sliceIndex).map((x,i) => <CardComponent key={index * 100 + i} card={x} />) }
         <div>Bet: ${hand.bet} Money: ${props.money}</div>
         <PlayerControlsComponent 
           hit={() => props.hit(hand)}
@@ -50,7 +50,7 @@ export function HandsComponent(props: {
   return (
     <>
       <h1>{props.name}</h1>
-      { props.hands.map(h => getHand(h)) }
+      { props.hands.map((h,i) => getHand(h, i)) }
     </>
   )
 }

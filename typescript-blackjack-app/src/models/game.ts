@@ -199,3 +199,7 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
     }
     setGame(game);
   };
+
+export const shouldShowInsurance = (game: Game) => {
+  return !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
+}
