@@ -203,3 +203,7 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
 export const shouldShowInsurance = (game: Game) => {
   return !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
 }
+
+export const shouldShowSplit = (game: Game, hand: Hand) => {
+  return !game.isRoundOver && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
+}

@@ -29,7 +29,6 @@ export function GameComponent() {
   const split = () => {
     console.log('split')
   };
-  const showSplit = () => { return true; }
   const insurance = () => {
     console.log('insurance');
   };
@@ -78,7 +77,7 @@ export function GameComponent() {
             stay={() => stay(game, setGame)}
             showStay={() => true}
             split={split}
-            showSplit={showSplit}
+            showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
             insurance={insurance}
             showInsurance={showInsurance}
             doubleDown={doubleDown}
