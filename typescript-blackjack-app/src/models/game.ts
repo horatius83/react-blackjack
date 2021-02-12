@@ -3,18 +3,22 @@ import { newDecks, shuffle, deal, getValues } from "./deck";
 import { Hand } from "./hand";
 import Player from "./player";
 
+export interface Rules {
+  minimumBet: number;
+  maximumBet: number;
+  blackJackPayout: number;
+  numberOfSplits: number;
+  numberOfDecks: number;
+}
+
 export interface Game {
     dealer: {cards: Array<Card>};
     players: Array<Player>;
     deck: Array<Card>;
     discard: Array<Card>;
     stays: Map<Player, boolean>;
-    minimumBet: number;
-    maximumBet: number;
-    blackJackPayout: number;
-    numberOfSplits: number;
-    numberOfDecks: number;
     isRoundOver: boolean;
+    rules: Rules;
 }
 
 export function dealCard(
@@ -61,11 +65,13 @@ export function newGame(
         deck,
         discard,
         stays: new Map<Player, boolean>(players.map(p => [p, false])),
-        minimumBet,
-        maximumBet,
-        blackJackPayout,
-        numberOfSplits,
-        numberOfDecks,
+        rules: {
+          minimumBet,
+          maximumBet,
+          blackJackPayout,
+          numberOfSplits,
+          numberOfDecks
+        },
         isRoundOver: false
     };
 }
@@ -115,8 +121,8 @@ export function stay(player: Player, game: Game) {
                 } else if(handValues.some(x => x <= 21 && x === dealerMaxValue)) {
                     player.money += hand.bet;
                 }
-                player.money -= game.minimumBet;
-                hand.bet = game.minimumBet;
+                player.money -= game.rules.minimumBet;
+                hand.bet = game.rules.minimumBet;
                 console.log(`Player: ${player.name} $${player.money}`);
             })
         }
@@ -154,12 +160,12 @@ export const getRoundSummary = (game: Game) => {
     } else {
       return `${game.players[0].name} wins ${nWinningPlayerHands.length} hands`;
     }
-  } else if(playerHandValues.some(hv => hv === dealerHandValue && hv <= 21)){ 
+  } else if(playerHandValues.some(hv => hv !== 0 && hv === dealerHandValue && hv <= 21)){ 
     // push
     return "Push";
   } else {
     // dealer wins
-    if(dealerHandValue <= 21) {
+    if(dealerHandValue !== 0 && dealerHandValue <= 21) {
       if(playerHandValues.some(x => x < 21 && x !== 0)) {
         return "Dealer Wins";
       } else {
@@ -183,7 +189,7 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
         for(const hand of player.hands) {
             game.discard = [...game.discard, ...hand.cards];
         }
-        player.hands = [{cards: [], bet: game.minimumBet, insurance: false}]
+        player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false}]
         // deal new cards
         dealCard(game.deck, player.hands[0].cards, game.discard);
         dealCard(game.deck, player.hands[0].cards, game.discard);
@@ -191,7 +197,7 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
     const playersWithBlackjacks = game.players.filter(p => hasBlackjack(game.dealer.cards, p.hands[0].cards));
     if(playersWithBlackjacks.length > 0) {
       playersWithBlackjacks.forEach(p => {
-        p.money += p.hands[0].bet * game.blackJackPayout;
+        p.money += p.hands[0].bet * game.rules.blackJackPayout;
       });
       game.isRoundOver = true;
     } else {
