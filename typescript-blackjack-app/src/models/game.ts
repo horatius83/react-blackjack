@@ -179,32 +179,32 @@ export const getRoundSummary = (game: Game) => {
 };
 
 export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Game>) => void) => {
-    console.log('newRound');
-    let game = {...oldGame}; 
-    game.discard = [...game.discard, ...game.dealer.cards];
-    game.dealer.cards = [];
-    dealCard(game.deck, game.dealer.cards, game.discard);
-    dealCard(game.deck, game.dealer.cards, game.discard);
-    for (const player of game.players) {
-        for(const hand of player.hands) {
-            game.discard = [...game.discard, ...hand.cards];
-        }
-        player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false}]
-        // deal new cards
-        dealCard(game.deck, player.hands[0].cards, game.discard);
-        dealCard(game.deck, player.hands[0].cards, game.discard);
-    }
-    const playersWithBlackjacks = game.players.filter(p => hasBlackjack(game.dealer.cards, p.hands[0].cards));
-    if(playersWithBlackjacks.length > 0) {
-      playersWithBlackjacks.forEach(p => {
-        p.money += p.hands[0].bet * game.rules.blackJackPayout;
-      });
-      game.isRoundOver = true;
-    } else {
-      game.isRoundOver = false;
-    }
-    setGame(game);
-  };
+  console.log('newRound');
+  let game = {...oldGame}; 
+  game.discard = [...game.discard, ...game.dealer.cards];
+  game.dealer.cards = [];
+  dealCard(game.deck, game.dealer.cards, game.discard);
+  dealCard(game.deck, game.dealer.cards, game.discard);
+  for (const player of game.players) {
+      for(const hand of player.hands) {
+          game.discard = [...game.discard, ...hand.cards];
+      }
+      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false}]
+      // deal new cards
+      dealCard(game.deck, player.hands[0].cards, game.discard);
+      dealCard(game.deck, player.hands[0].cards, game.discard);
+  }
+  const playersWithBlackjacks = game.players.filter(p => hasBlackjack(game.dealer.cards, p.hands[0].cards));
+  if(playersWithBlackjacks.length > 0) {
+    playersWithBlackjacks.forEach(p => {
+      p.money += p.hands[0].bet * game.rules.blackJackPayout;
+    });
+    game.isRoundOver = true;
+  } else {
+    game.isRoundOver = false;
+  }
+  setGame(game);
+};
 
 export const shouldShowInsurance = (game: Game) => {
   return !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
