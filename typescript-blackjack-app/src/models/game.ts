@@ -16,7 +16,7 @@ export interface Game {
     players: Array<Player>;
     deck: Array<Card>;
     discard: Array<Card>;
-    stays: Map<Player, boolean>;
+    stays: Map<Hand, boolean>;
     isRoundOver: boolean;
     rules: Rules;
 }
@@ -64,7 +64,7 @@ export function newGame(
         players,
         deck,
         discard,
-        stays: new Map<Player, boolean>(players.map(p => [p, false])),
+        stays: new Map<Hand, boolean>(players.reduce((tuples, p) => tuples.concat(p.hands.map(h => [h, false])), new Array<[Hand, boolean]>())),
         rules: {
           minimumBet,
           maximumBet,
@@ -76,7 +76,7 @@ export function newGame(
     };
 }
 
-export function hit(player: Player, game: Game, hand: Hand) {
+export function hit(game: Game, hand: Hand) {
     if (!deal(game.deck, hand.cards)) {
         game.deck = game.discard;
         game.discard = new Array<Card>();
@@ -88,12 +88,12 @@ export function hit(player: Player, game: Game, hand: Hand) {
     const allValues = Array.from(getValues(hand.cards));
     const valueLessThan21 = allValues.some(x => x < 21);
     if(!valueLessThan21) {
-        stay(player, game);
+        stay(hand, game);
     }
 }
 
-export function stay(player: Player, game: Game) {
-    game.stays.set(player, true);
+export function stay(hand: Hand, game: Game) {
+    game.stays.set(hand, true);
 
     if(Array.from(game.stays.values()).every(x => x)) {
         // dealer plays

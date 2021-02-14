@@ -11,7 +11,7 @@ export function HandsComponent(props: {
   money: number,
   hit: (hand: Hand) => void, 
   showHit: () => boolean,
-  stay: () => void,
+  stay: (hand: Hand) => void,
   showStay: () => boolean,
   split: (hand: Hand) => void,
   showSplit: (h: Hand) => boolean,
@@ -35,7 +35,7 @@ export function HandsComponent(props: {
         <PlayerControlsComponent 
           hit={() => props.hit(hand)}
           showHit={props.showHit}
-          stay={props.stay}
+          stay={() => props.stay(hand)}
           showStay={props.showStay}
           split={() => props.split(hand)}
           showSplit={() => props.showSplit(hand)}

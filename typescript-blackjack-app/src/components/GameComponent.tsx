@@ -9,14 +9,14 @@ const hit = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAct
   console.log('hit');
   let newGame = {...game}; 
   // Need a way for different players to hit
-  blackjack.hit(game.players[0], newGame, hand);
+  blackjack.hit(newGame, hand);
   setGame(newGame);
 };
 
-const stay = (game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
+const stay = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('stay');
   let newGame = {...game}; 
-  blackjack.stay(game.players[0], newGame);
+  blackjack.stay(hand, newGame);
   setGame(newGame);
 };
 
@@ -48,7 +48,7 @@ export function GameComponent() {
             money={game.players[0].money}
             hit={(hand: Hand) => hit(hand, game, setGame)}
             showHit={() => false}
-            stay={() => stay(game, setGame)}
+            stay={(hand: Hand) => stay(hand, game, setGame)}
             showStay={() => false}
             split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={() => false}
@@ -71,7 +71,7 @@ export function GameComponent() {
             money={game.players[0].money}
             hit={(hand: Hand) => hit(hand, game, setGame)}
             showHit={showHit}
-            stay={() => stay(game, setGame)}
+            stay={(hand: Hand) => stay(hand, game, setGame)}
             showStay={() => true}
             split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
