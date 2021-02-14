@@ -16,7 +16,6 @@ export interface Game {
     players: Array<Player>;
     deck: Array<Card>;
     discard: Array<Card>;
-    stays: Map<Hand, boolean>;
     isRoundOver: boolean;
     rules: Rules;
 }
@@ -64,7 +63,6 @@ export function newGame(
         players,
         deck,
         discard,
-        stays: new Map<Hand, boolean>(players.reduce((tuples, p) => tuples.concat(p.hands.map(h => [h, false])), new Array<[Hand, boolean]>())),
         rules: {
           minimumBet,
           maximumBet,
@@ -92,10 +90,16 @@ export function hit(game: Game, hand: Hand) {
     }
 }
 
-export function stay(hand: Hand, game: Game) {
-    game.stays.set(hand, true);
+export function haveAllPlayersStayed(game: Game): boolean {
+  const f = (b: boolean, h: Hand) => b && h.stayed;
+  const g = (b: boolean, p: Player) => b && p.hands.reduce(f, true);
+  return game.players.reduce(g, true);
+}
 
-    if(Array.from(game.stays.values()).every(x => x)) {
+export function stay(hand: Hand, game: Game) {
+    hand.stayed = true;
+
+    if(haveAllPlayersStayed(game)) {
         // dealer plays
         let dealerValues = Array.from(getValues(game.dealer.cards))
             .filter(x => x <= 21);
@@ -182,7 +186,7 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
       for(const hand of player.hands) {
           game.discard = [...game.discard, ...hand.cards];
       }
-      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false}]
+      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false, stayed: false}]
       // deal new cards
       dealCard(game.deck, player.hands[0].cards, game.discard);
       dealCard(game.deck, player.hands[0].cards, game.discard);

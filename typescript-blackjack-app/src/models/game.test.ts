@@ -6,14 +6,13 @@ import { newPlayer } from './player';
 
 const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>): Game=> {
     const player = newPlayer("Max", 100);
-    player.hands = [{cards: playerCards, bet: 100, insurance: false}]
+    player.hands = [{cards: playerCards, bet: 100, insurance: false, stayed: false}]
     const players = [player];
     return {
         dealer: {cards: dealerCards},
         players,
         deck: newDecks(2),
         discard: [],
-        stays: new Map<Hand, boolean>(players.reduce((xs, p) => xs.concat(p.hands.map(h => [h, false])), new Array<[Hand, boolean]>())),
         rules: {
             minimumBet: 10,
             maximumBet: 100,
