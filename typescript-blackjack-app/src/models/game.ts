@@ -225,7 +225,7 @@ export const splitHand = (game: Game, hand: Hand): Game => {
     return game;
   }
   const player = players[0];
-  if(player.hands.length >= game.rules.numberOfSplits) {
+  if(player.hands.length > game.rules.numberOfSplits) {
     console.log('Could not split anymore');
     return game;
   }

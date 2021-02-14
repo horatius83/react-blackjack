@@ -26,9 +26,6 @@ export function GameComponent() {
 
   const showHit = () => { return !game.isRoundOver; }
 
-  const split = () => {
-    console.log('split')
-  };
   const insurance = () => {
     console.log('insurance');
   };
@@ -53,7 +50,7 @@ export function GameComponent() {
             showHit={() => false}
             stay={() => stay(game, setGame)}
             showStay={() => false}
-            split={split}
+            split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={() => false}
             insurance={insurance}
             showInsurance={() => false}
@@ -76,7 +73,7 @@ export function GameComponent() {
             showHit={showHit}
             stay={() => stay(game, setGame)}
             showStay={() => true}
-            split={split}
+            split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
             insurance={insurance}
             showInsurance={showInsurance}
