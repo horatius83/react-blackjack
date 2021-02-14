@@ -178,6 +178,35 @@ export const getRoundSummary = (game: Game) => {
   // player wins with Blackjack
 };
 
+enum HandResult {
+  Win,
+  Bust,
+  Push,
+  Loss
+};
+
+export const getHandSummary = (game: Game, hand: Hand): HandResult => {
+  const dealerHandValues = Array.from(getValues(game.dealer.cards))
+    .filter(v => v <= 21);
+  const playerHandValues = Array.from(getValues(hand.cards))
+    .filter(v => v <= 21);
+  if (playerHandValues.length === 0) {
+    return HandResult.Bust;
+  }
+  if(dealerHandValues.length === 0) {
+    return HandResult.Win;
+  } 
+  const dealerMaxValue = dealerHandValues.reduce((g, x) => x > g ? x : g);
+  const playerMaxValue = playerHandValues.reduce((g, x) => x > g ? x : g);
+  if(playerMaxValue > dealerMaxValue) {
+    return HandResult.Win;
+  } else if (playerMaxValue === dealerMaxValue) {
+    return HandResult.Push;
+  } else {
+    return HandResult.Loss;
+  }
+}
+
 export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Game>) => void) => {
   console.log('newRound');
   let game = {...oldGame}; 
