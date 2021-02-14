@@ -86,8 +86,8 @@ export function hit(game: Game, hand: Hand) {
     }
     // If value exceeds 21 then mark it as a stay
     const allValues = Array.from(getValues(hand.cards));
-    const valueLessThan21 = allValues.some(x => x < 21);
-    if(!valueLessThan21) {
+    const valueLessThanOrEqualTo21 = allValues.some(x => x <= 21);
+    if(!valueLessThanOrEqualTo21) {
         stay(hand, game);
     }
 }
@@ -139,7 +139,7 @@ export function hasBlackjack(dealer: Array<Card>, cards: Array<Card>) {
         && !(dealer[1].rank === Rank.Ace || tenCards.has(dealer[1].rank))
         && cards.length === 2 
         && cards.some(x => x.rank === Rank.Ace)
-        && cards.map(c => tenCards.has(c.rank));
+        && cards.some(c => tenCards.has(c.rank));
 }
 
 export enum HandResult {
@@ -231,7 +231,8 @@ export const splitHand = (game: Game, hand: Hand): Game => {
   dealCard(game.deck, hand2.cards, game.discard);
   const newHands = [...player.hands.splice(0,index), ...player.hands.splice(index+1), hand1, hand2];
   player.hands = newHands;
-  return {...game, players: [...game.players, player]};
+  const newPlayers = [...game.players, player]
+  return {...game, players: newPlayers};
 }
 
 export const split = (oldGame: Game, hand: Hand, setGame: (game: React.SetStateAction<Game>) => void) => {
