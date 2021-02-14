@@ -142,43 +142,7 @@ export function hasBlackjack(dealer: Array<Card>, cards: Array<Card>) {
         && cards.map(c => tenCards.has(c.rank));
 }
 
-export const getRoundSummary = (game: Game) => {
-  console.log('getRoundSummary');
-  const dealerHandValue = Array.from(getValues(game.dealer.cards))
-    .filter(v => v <= 21)
-    .reduce((x,y) => x > y ? x : y, 0);
-  const playerHandValues = game.players[0].hands.map(h => 
-    Array.from(getValues(h.cards))
-      .filter(v => v <= 21)
-      .reduce((x,y) => x > y ? x : y, 0)
-  );
-  const nWinningPlayerHands = playerHandValues.filter(hv => hv > dealerHandValue);
-  if(nWinningPlayerHands.length > 0) {
-    // player wins
-    if(nWinningPlayerHands.length === 1) {
-      return `${game.players[0].name} Wins`;
-    } else {
-      return `${game.players[0].name} wins ${nWinningPlayerHands.length} hands`;
-    }
-  } else if(playerHandValues.some(hv => hv !== 0 && hv === dealerHandValue && hv <= 21)){ 
-    // push
-    return "Push";
-  } else {
-    // dealer wins
-    if(dealerHandValue !== 0 && dealerHandValue <= 21) {
-      if(playerHandValues.some(x => x < 21 && x !== 0)) {
-        return "Dealer Wins";
-      } else {
-        return `Dealer Wins (${game.players[0].name} busted)`;
-      }
-    } else {
-      return "Both Busted";
-    }
-  }
-  // player wins with Blackjack
-};
-
-enum HandResult {
+export enum HandResult {
   Win,
   Bust,
   Push,

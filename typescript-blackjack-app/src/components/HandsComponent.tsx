@@ -1,4 +1,5 @@
 import React from 'react';
+import { HandResult } from '../models/game';
 import { Hand } from '../models/hand';
 import { CardBackComponent } from './CardBackComponent';
 import { CardComponent } from './CardComponent';
@@ -18,7 +19,9 @@ export function HandsComponent(props: {
   insurance: () => void,
   showInsurance: () => boolean,
   doubleDown: () => void,
-  showDoubleDown: () => boolean
+  showDoubleDown: () => boolean,
+  showHandSummaries: () => boolean,
+  handSummary: (h: Hand) => HandResult
 }) {
   function getHand(hand: Hand, index: number) {
     const sliceIndex = props.showAll ? 0 : 1;
@@ -27,8 +30,27 @@ export function HandsComponent(props: {
         return <CardBackComponent key={index}/>
       } 
     }
+    const handResultToStringMapping = new Map<HandResult, string>([
+      [HandResult.Bust, 'Busted'],
+      [HandResult.Loss, 'Lost'],
+      [HandResult.Push, 'Pushed'],
+      [HandResult.Win, 'Won!']
+    ]);
+    function displayHandSummary(hand: Hand) {
+      if(props.showHandSummaries()) {
+        const summary = handResultToStringMapping.get(props.handSummary(hand));
+        return (
+          <div>
+            <b>{summary}</b>
+          </div>
+        )
+      } else {
+        return null;
+      }
+    }
     return (
       <>
+        {displayHandSummary(hand)}
         { getCardBack() }
         { hand.cards.slice(sliceIndex).map((x,i) => <CardComponent key={index * 100 + i} card={x} />) }
         <div>Bet: ${hand.bet} Money: ${props.money}</div>

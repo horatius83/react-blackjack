@@ -1,9 +1,10 @@
 import { Card, Rank, Suit } from './card';
 import { newDecks } from './deck';
-import { Game, getRoundSummary, splitHand } from './game'
-import Player, { newPlayer } from './player';
+import { Game, getHandSummary, HandResult, splitHand } from './game'
+import { Hand } from './hand';
+import { newPlayer } from './player';
 
-const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>) => {
+const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>): Game=> {
     const player = newPlayer("Max", 100);
     player.hands = [{cards: playerCards, bet: 100, insurance: false}]
     const players = [player];
@@ -12,12 +13,12 @@ const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>) => {
         players,
         deck: newDecks(2),
         discard: [],
-        stays: new Map<Player, boolean>(players.map(p => [p, false])),
+        stays: new Map<Hand, boolean>(players.reduce((xs, p) => xs.concat(p.hands.map(h => [h, false])), new Array<[Hand, boolean]>())),
         rules: {
             minimumBet: 10,
             maximumBet: 100,
             blackJackPayout: 3/2,
-            numberOfSplits: 2,
+            numberOfSplits: 1,
             numberOfDecks: 2
         },
         isRoundOver: false
@@ -31,9 +32,9 @@ describe('getRoundsummary', () => {
         const dealerCards: Array<Card> = ranks.map(r => {return {rank: r, suit: Suit.Diamonds}});
         const game = createGame(dealerCards, playerCards);
 
-        const result = getRoundSummary(game);
+        const result = getHandSummary(game, game.players[0].hands[0]);
 
-        expect(result).toBe("Both Busted");
+        expect(result).toBe(HandResult.Bust);
     });
 });
 

@@ -39,7 +39,6 @@ export function GameComponent() {
     if(game.isRoundOver) {
       return (
         <>
-          <h1>{blackjack.getRoundSummary(game)}</h1>
           <DealerComponent  cards={game.dealer.cards} showAll={true}/>
           <HandsComponent name={
             game.players[0].name} 
@@ -56,6 +55,8 @@ export function GameComponent() {
             showInsurance={() => false}
             doubleDown={doubleDown}
             showDoubleDown={() => false}
+            showHandSummaries={() => true}
+            handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
           />
           <button onClick={() => blackjack.newRound(game, setGame)}>New Round</button>
         </>
@@ -79,6 +80,8 @@ export function GameComponent() {
             showInsurance={showInsurance}
             doubleDown={doubleDown}
             showDoubleDown={showDoubleDown}
+            showHandSummaries={() => false}
+            handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
           />
         </div>
       ); 
