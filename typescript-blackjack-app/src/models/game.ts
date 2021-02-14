@@ -213,3 +213,35 @@ export const shouldShowInsurance = (game: Game) => {
 export const shouldShowSplit = (game: Game, hand: Hand) => {
   return !game.isRoundOver && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
 }
+
+export const splitHand = (game: Game, hand: Hand): Game => {
+  if(hand.cards.length !== 2) {
+    return game;
+  }
+  // find the player that has this hand
+  const players = game.players.filter(p => p.hands.some(h => h === hand));
+  if (!players) {
+    console.log('Could not find player');
+    return game;
+  }
+  const player = players[0];
+  if(player.hands.length >= game.rules.numberOfSplits) {
+    console.log('Could not split anymore');
+    return game;
+  }
+  const index = player.hands.indexOf(hand);
+  // split the hand in two
+  const hand1: Hand = {...hand, cards: [hand.cards[0]] };
+  const hand2: Hand = {...hand, cards: [hand.cards[1]] };
+  // deal cards
+  dealCard(game.deck, hand1.cards, game.discard);
+  dealCard(game.deck, hand2.cards, game.discard);
+  const newHands = [...player.hands.splice(0,index), ...player.hands.splice(index+1), hand1, hand2];
+  player.hands = newHands;
+  return {...game, players: [...game.players, player]};
+}
+
+export const split = (oldGame: Game, hand: Hand, setGame: (game: React.SetStateAction<Game>) => void) => {
+  let game = splitHand({...oldGame}, hand);
+  setGame(game);
+}
