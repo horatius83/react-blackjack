@@ -24,7 +24,7 @@ const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>): Game=> 
     };
 };
 
-describe('getRoundsummary', () => {
+describe('getHandSummary', () => {
     test('pushes greater than 21 do not count', () => {
         const ranks = [Rank.Jack, Rank.Queen, Rank.King];
         const playerCards: Array<Card> = ranks.map(r => {return {rank: r, suit: Suit.Hearts}});
