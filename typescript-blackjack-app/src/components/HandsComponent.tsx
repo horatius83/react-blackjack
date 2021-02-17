@@ -16,7 +16,7 @@ export function HandsComponent(props: {
   showStay: (hand: Hand) => boolean,
   split: (hand: Hand) => void,
   showSplit: (h: Hand) => boolean,
-  insurance: () => void,
+  insurance: (h: Hand) => void,
   showInsurance: (hand: Hand) => boolean,
   doubleDown: () => void,
   showDoubleDown: (hand: Hand) => boolean,
@@ -61,7 +61,7 @@ export function HandsComponent(props: {
           showStay={() => props.showStay(hand)}
           split={() => props.split(hand)}
           showSplit={() => props.showSplit(hand)}
-          insurance={props.insurance}
+          insurance={() => props.insurance(hand)}
           showInsurance={() => props.showInsurance(hand)}
           doubleDown={props.doubleDown}
           showDoubleDown={() => props.showDoubleDown(hand)}

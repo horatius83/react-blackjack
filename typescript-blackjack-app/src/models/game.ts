@@ -123,6 +123,15 @@ export function stay(hand: Hand, game: Game) {
                 } else if(handValues.some(x => x <= 21 && x === dealerMaxValue)) {
                     player.money += hand.bet;
                 }
+                // check insurance
+                if (hand.insurance 
+                  && game.dealer.cards.length === 2
+                  && game.dealer.cards.some(x => x.rank === Rank.Ace)
+                  && game.dealer.cards.some(x => tenCards.has(x.rank))
+                ) {
+                  player.money += hand.bet;
+                }
+                hand.insurance = false;
                 player.money -= game.rules.minimumBet;
                 hand.bet = game.rules.minimumBet;
                 console.log(`Player: ${player.name} $${player.money}`);
@@ -199,7 +208,11 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
 };
 
 export const shouldShowInsurance = (game: Game, hand: Hand) => {
-  return !hand.stayed && !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
+  return !hand.insurance && !hand.stayed && !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
+}
+
+export const insurance = (hand: Hand) => {
+  hand.insurance = true;
 }
 
 export const shouldShowSplit = (game: Game, hand: Hand) => {

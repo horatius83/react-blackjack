@@ -25,10 +25,6 @@ export function GameComponent() {
   const [game, setGame] = useState(blackjack.newGame([player], 100, 1000, 3.0/2.0, 1, 2));
 
   const showHit = (hand: Hand) => { return !hand.stayed && !game.isRoundOver; }
-
-  const insurance = () => {
-    console.log('insurance');
-  };
   const showInsurance = (hand: Hand) => blackjack.shouldShowInsurance(game, hand);
   const doubleDown = () => {
     console.log('doubleDown');
@@ -50,7 +46,7 @@ export function GameComponent() {
             showStay={(hand: Hand) => blackjack.shouldShowStay(game, hand)}
             split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={() => false}
-            insurance={insurance}
+            insurance={blackjack.insurance}
             showInsurance={() => false}
             doubleDown={doubleDown}
             showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
@@ -75,7 +71,7 @@ export function GameComponent() {
             showStay={(hand: Hand) => blackjack.shouldShowStay(game, hand)}
             split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
-            insurance={insurance}
+            insurance={blackjack.insurance}
             showInsurance={(hand: Hand) => showInsurance(hand)}
             doubleDown={doubleDown}
             showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
