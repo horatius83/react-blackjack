@@ -20,26 +20,7 @@ export interface Game {
     rules: Rules;
 }
 
-/*
 export function dealCard(
-    deck: Array<Card>, 
-    to: Array<Card>, 
-    discard: Array<Card>): boolean {
-
-    if(!deal(deck, to)) {
-        console.log('Shuffling...');
-        deck = discard;
-        discard = [];
-        if(!deal(deck, to)) {
-            console.log("Could not deal card!");
-            return false;
-        }
-    }
-    return true;
-}
-*/
-
-export function dealCardImmutable(
     deck: Array<Card>, 
     to: Array<Card>, 
     discard: Array<Card>): [Array<Card>, Array<Card>, Array<Card>] {
@@ -61,7 +42,7 @@ export function dealCards(deck: Array<Card>, to: Array<Card>, discard: Array<Car
     let newDiscard = [...discard];
 
     for(let i=0; i<cards; i++) {
-      [newDeck, newTo, newDiscard] = dealCardImmutable(newDeck, newTo, newDiscard);
+      [newDeck, newTo, newDiscard] = dealCard(newDeck, newTo, newDiscard);
     }
     return [newDeck, newTo, newDiscard];
 }
@@ -98,7 +79,7 @@ export function newGame(
 }
 
 export function hit(game: Game, hand: Hand) {
-    [game.deck, hand.cards, game.discard] = dealCardImmutable(game.deck, hand.cards, game.discard);
+    [game.deck, hand.cards, game.discard] = dealCard(game.deck, hand.cards, game.discard);
     // If value exceeds 21 then mark it as a stay
     const allValues = Array.from(getValues(hand.cards));
     const valueLessThanOrEqualTo21 = allValues.some(x => x <= 21);
@@ -124,7 +105,7 @@ export function stay(hand: Hand, game: Game) {
             ? dealerValues.reduce((max, x) => x > max ? x : max)
             : 0
         while(dealerValues.length > 0 && dealerMaxValue < 17) {
-            [game.deck, game.dealer.cards, game.discard] = dealCardImmutable(game.deck, game.dealer.cards, game.discard);
+            [game.deck, game.dealer.cards, game.discard] = dealCard(game.deck, game.dealer.cards, game.discard);
             dealerValues = Array.from(getValues(game.dealer.cards))
                 .filter(x => x <= 21);
             dealerMaxValue = dealerValues.length
@@ -245,8 +226,8 @@ export const splitHand = (game: Game, hand: Hand): Game => {
   const hand1: Hand = {...hand, cards: [hand.cards[0]] };
   const hand2: Hand = {...hand, cards: [hand.cards[1]] };
   // deal cards
-  [game.deck, hand1.cards, game.discard] = dealCardImmutable(game.deck, hand1.cards, game.discard);
-  [game.deck, hand2.cards, game.discard] = dealCardImmutable(game.deck, hand2.cards, game.discard);
+  [game.deck, hand1.cards, game.discard] = dealCard(game.deck, hand1.cards, game.discard);
+  [game.deck, hand2.cards, game.discard] = dealCard(game.deck, hand2.cards, game.discard);
   const newHands = [...player.hands.splice(0,handIndex), ...player.hands.splice(handIndex+1), hand1, hand2];
   player.hands = newHands;
   const playerIndex = players.indexOf(player);
