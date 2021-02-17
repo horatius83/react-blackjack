@@ -1,5 +1,5 @@
 import { Card, Rank } from "./card";
-import { newDecks, shuffle, deal, getValues, dealImmutable, shuffleImmutable } from "./deck";
+import { newDecks, getValues, dealImmutable, shuffleImmutable } from "./deck";
 import { Hand } from "./hand";
 import Player from "./player";
 
@@ -217,8 +217,8 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
   setGame(game);
 };
 
-export const shouldShowInsurance = (game: Game) => {
-  return !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
+export const shouldShowInsurance = (game: Game, hand: Hand) => {
+  return !hand.stayed && !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
 }
 
 export const shouldShowSplit = (game: Game, hand: Hand) => {
@@ -226,7 +226,6 @@ export const shouldShowSplit = (game: Game, hand: Hand) => {
 }
 
 export const splitHand = (game: Game, hand: Hand): Game => {
-  debugger;
   if(hand.cards.length !== 2) {
     return game;
   }
@@ -259,3 +258,7 @@ export const split = (oldGame: Game, hand: Hand, setGame: (game: React.SetStateA
   let game = splitHand({...oldGame}, hand);
   setGame(game);
 }
+
+export const shouldShowDoubleDown = (game: Game, hand: Hand) => !hand.stayed && !game.isRoundOver;
+
+export const shouldShowStay = (game: Game, hand: Hand) => !hand.stayed && !game.isRoundOver;

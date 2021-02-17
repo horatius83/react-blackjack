@@ -24,16 +24,15 @@ export function GameComponent() {
   const player = newPlayer("Max", 1000); 
   const [game, setGame] = useState(blackjack.newGame([player], 100, 1000, 3.0/2.0, 1, 2));
 
-  const showHit = () => { return !game.isRoundOver; }
+  const showHit = (hand: Hand) => { return !hand.stayed && !game.isRoundOver; }
 
   const insurance = () => {
     console.log('insurance');
   };
-  const showInsurance = () => blackjack.shouldShowInsurance(game);
+  const showInsurance = (hand: Hand) => blackjack.shouldShowInsurance(game, hand);
   const doubleDown = () => {
     console.log('doubleDown');
   };
-  const showDoubleDown = () => { return true; }
 
   const displayComponent = (game: blackjack.Game) => {
     if(game.isRoundOver) {
@@ -48,13 +47,13 @@ export function GameComponent() {
             hit={(hand: Hand) => hit(hand, game, setGame)}
             showHit={() => false}
             stay={(hand: Hand) => stay(hand, game, setGame)}
-            showStay={() => false}
+            showStay={(hand: Hand) => blackjack.shouldShowStay(game, hand)}
             split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={() => false}
             insurance={insurance}
             showInsurance={() => false}
             doubleDown={doubleDown}
-            showDoubleDown={() => false}
+            showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
             showHandSummaries={() => true}
             handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
           />
@@ -73,13 +72,13 @@ export function GameComponent() {
             hit={(hand: Hand) => hit(hand, game, setGame)}
             showHit={showHit}
             stay={(hand: Hand) => stay(hand, game, setGame)}
-            showStay={() => true}
+            showStay={(hand: Hand) => blackjack.shouldShowStay(game, hand)}
             split={(hand: Hand) => blackjack.split(game, hand, setGame)}
             showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
             insurance={insurance}
-            showInsurance={showInsurance}
+            showInsurance={(hand: Hand) => showInsurance(hand)}
             doubleDown={doubleDown}
-            showDoubleDown={showDoubleDown}
+            showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
             showHandSummaries={() => false}
             handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
           />

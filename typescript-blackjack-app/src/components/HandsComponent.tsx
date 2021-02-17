@@ -11,15 +11,15 @@ export function HandsComponent(props: {
   showAll: boolean,
   money: number,
   hit: (hand: Hand) => void, 
-  showHit: () => boolean,
+  showHit: (hand: Hand) => boolean,
   stay: (hand: Hand) => void,
-  showStay: () => boolean,
+  showStay: (hand: Hand) => boolean,
   split: (hand: Hand) => void,
   showSplit: (h: Hand) => boolean,
   insurance: () => void,
   showInsurance: (hand: Hand) => boolean,
   doubleDown: () => void,
-  showDoubleDown: () => boolean,
+  showDoubleDown: (hand: Hand) => boolean,
   showHandSummaries: () => boolean,
   handSummary: (h: Hand) => HandResult
 }) {
@@ -56,15 +56,15 @@ export function HandsComponent(props: {
         <div>Bet: ${hand.bet} Money: ${props.money}</div>
         <PlayerControlsComponent 
           hit={() => props.hit(hand)}
-          showHit={props.showHit}
+          showHit={() => props.showHit(hand)}
           stay={() => props.stay(hand)}
-          showStay={props.showStay}
+          showStay={() => props.showStay(hand)}
           split={() => props.split(hand)}
           showSplit={() => props.showSplit(hand)}
           insurance={props.insurance}
           showInsurance={() => props.showInsurance(hand)}
           doubleDown={props.doubleDown}
-          showDoubleDown={props.showDoubleDown}
+          showDoubleDown={() => props.showDoubleDown(hand)}
         />
       </>
     )
