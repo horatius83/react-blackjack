@@ -78,6 +78,12 @@ export function newGame(
     };
 }
 
+export const showHit = (game: Game, hand: Hand) => {
+  return !game.isRoundOver
+    && !hand.stayed
+    && !hand.doubledDown;
+}
+
 export function hit(game: Game, hand: Hand) {
     [game.deck, hand.cards, game.discard] = dealCard(game.deck, hand.cards, game.discard);
     // If value exceeds 21 then mark it as a stay
@@ -191,7 +197,7 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
       for(const hand of player.hands) {
           game.discard = [...game.discard, ...hand.cards];
       }
-      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false, stayed: false}];
+      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false, stayed: false, doubledDown: false}];
       // deal new cards
      [game.deck, player.hands[0].cards, game.discard] = dealCards(game.deck, player.hands[0].cards, game.discard, 2);
   }
@@ -253,6 +259,11 @@ export const split = (oldGame: Game, hand: Hand, setGame: (game: React.SetStateA
   setGame(game);
 }
 
-export const shouldShowDoubleDown = (game: Game, hand: Hand) => !hand.stayed && !game.isRoundOver;
+export const shouldShowDoubleDown = (game: Game, hand: Hand) => !hand.stayed && !hand.doubledDown && !game.isRoundOver;
+
+export const doubleDown = (game: Game, hand: Hand) => {
+  [game.deck, hand.cards, game.discard] = dealCard(game.deck, hand.cards, game.discard);
+  hand.doubledDown = true;
+};
 
 export const shouldShowStay = (game: Game, hand: Hand) => !hand.stayed && !game.isRoundOver;

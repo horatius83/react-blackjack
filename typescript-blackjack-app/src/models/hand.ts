@@ -4,5 +4,6 @@ export interface Hand {
     cards: Array<Card>,
     bet: number,
     insurance: boolean,
-    stayed: boolean
+    stayed: boolean,
+    doubledDown: boolean
 }
