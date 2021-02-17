@@ -27,6 +27,12 @@ export function shuffle(cards: Array<card.Card>): void {
   }
 }
 
+export function shuffleImmutable(cards: Array<card.Card>): Array<card.Card> {
+  const newCards = [...cards];
+  shuffle(newCards);
+  return newCards;
+}
+
 export function deal(from: Array<card.Card>, to: Array<card.Card>): boolean {
   const card = from.pop();
   if(card !== undefined) {
@@ -34,6 +40,14 @@ export function deal(from: Array<card.Card>, to: Array<card.Card>): boolean {
     return true;
   } 
   return false;
+}
+
+export function dealImmutable(from: Array<card.Card>, to: Array<card.Card>): [Array<card.Card>, Array<card.Card>] {
+  if(!from.length) {
+    return [[], []];
+  }
+  const card = from[0];
+  return [from.slice(1,), [...to, card]];
 }
 
 export function getValues(cards: Array<card.Card>): Set<number> {

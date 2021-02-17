@@ -1,5 +1,5 @@
 import { Card, Rank } from "./card";
-import { newDecks, shuffle, deal, getValues } from "./deck";
+import { newDecks, shuffle, deal, getValues, dealImmutable, shuffleImmutable } from "./deck";
 import { Hand } from "./hand";
 import Player from "./player";
 
@@ -20,6 +20,7 @@ export interface Game {
     rules: Rules;
 }
 
+/*
 export function dealCard(
     deck: Array<Card>, 
     to: Array<Card>, 
@@ -36,6 +37,34 @@ export function dealCard(
     }
     return true;
 }
+*/
+
+export function dealCardImmutable(
+    deck: Array<Card>, 
+    to: Array<Card>, 
+    discard: Array<Card>): [Array<Card>, Array<Card>, Array<Card>] {
+
+    if(deck.length) {
+      const [newDeck, newTo] = dealImmutable(deck, to);
+      return [newDeck, newTo, discard];
+    } else {
+      const [newDeck, newTo] = dealImmutable(shuffleImmutable(discard), to);
+      return [newDeck, newTo, []];
+    }
+}
+
+export function dealCards(deck: Array<Card>, to: Array<Card>, discard: Array<Card>, cards: number): 
+  [Array<Card>, Array<Card>, Array<Card>] {
+
+    let newDeck = [...deck];
+    let newTo = [...to];
+    let newDiscard = [...discard];
+
+    for(let i=0; i<cards; i++) {
+      [newDeck, newTo, newDiscard] = dealCardImmutable(newDeck, newTo, newDiscard);
+    }
+    return [newDeck, newTo, newDiscard];
+}
 
 export function newGame(
     players: Array<Player>, 
@@ -45,18 +74,12 @@ export function newGame(
     numberOfSplits: number, 
     numberOfDecks: number
 ): Game {
-    let discard = new Array<Card>();
-    let deck = newDecks(numberOfDecks);
-    shuffle(deck);
-    let dealersHand = new Array<Card>();
-    dealCard(deck, dealersHand, discard);
-    dealCard(deck, dealersHand, discard);
+    let [deck, dealersHand, discard] = dealCards(shuffleImmutable(newDecks(numberOfDecks)), [], [], 2);
     for(const player of players) {
         player.hands.length = 1;
         player.hands[0].bet = minimumBet;
         player.money -= minimumBet;
-        dealCard(deck, player.hands[0].cards, discard);
-        dealCard(deck, player.hands[0].cards, discard);
+       [deck, player.hands[0].cards, discard] = dealCards(deck, [], discard, 2);
     }  
     return {
         dealer: {cards: dealersHand},
@@ -75,13 +98,7 @@ export function newGame(
 }
 
 export function hit(game: Game, hand: Hand) {
-    if (!deal(game.deck, hand.cards)) {
-        game.deck = game.discard;
-        game.discard = new Array<Card>();
-        if(!deal(game.deck, hand.cards)) {
-            console.log('hit: Could not deal card');
-        }
-    }
+    [game.deck, hand.cards, game.discard] = dealCardImmutable(game.deck, hand.cards, game.discard);
     // If value exceeds 21 then mark it as a stay
     const allValues = Array.from(getValues(hand.cards));
     const valueLessThanOrEqualTo21 = allValues.some(x => x <= 21);
@@ -107,7 +124,7 @@ export function stay(hand: Hand, game: Game) {
             ? dealerValues.reduce((max, x) => x > max ? x : max)
             : 0
         while(dealerValues.length > 0 && dealerMaxValue < 17) {
-            deal(game.deck, game.dealer.cards);
+            [game.deck, game.dealer.cards, game.discard] = dealCardImmutable(game.deck, game.dealer.cards, game.discard);
             dealerValues = Array.from(getValues(game.dealer.cards))
                 .filter(x => x <= 21);
             dealerMaxValue = dealerValues.length
@@ -178,18 +195,15 @@ export const getHandSummary = (game: Game, hand: Hand): HandResult => {
 export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Game>) => void) => {
   console.log('newRound');
   let game = {...oldGame}; 
-  game.discard = [...game.discard, ...game.dealer.cards];
-  game.dealer.cards = [];
-  dealCard(game.deck, game.dealer.cards, game.discard);
-  dealCard(game.deck, game.dealer.cards, game.discard);
+  [game.dealer.cards, game.discard, game.deck] = dealCards(game.dealer.cards, game.discard, game.deck, game.dealer.cards.length);
+  [game.deck, game.dealer.cards, game.discard] = dealCards(game.deck, game.dealer.cards, game.discard, 2);
   for (const player of game.players) {
       for(const hand of player.hands) {
           game.discard = [...game.discard, ...hand.cards];
       }
-      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false, stayed: false}]
+      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false, stayed: false}];
       // deal new cards
-      dealCard(game.deck, player.hands[0].cards, game.discard);
-      dealCard(game.deck, player.hands[0].cards, game.discard);
+     [game.deck, player.hands[0].cards, game.discard] = dealCards(game.deck, player.hands[0].cards, game.discard, 2);
   }
   const playersWithBlackjacks = game.players.filter(p => hasBlackjack(game.dealer.cards, p.hands[0].cards));
   if(playersWithBlackjacks.length > 0) {
@@ -208,10 +222,11 @@ export const shouldShowInsurance = (game: Game) => {
 }
 
 export const shouldShowSplit = (game: Game, hand: Hand) => {
-  return !game.isRoundOver && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
+  return !hand.stayed && !game.isRoundOver && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
 }
 
 export const splitHand = (game: Game, hand: Hand): Game => {
+  debugger;
   if(hand.cards.length !== 2) {
     return game;
   }
@@ -226,16 +241,17 @@ export const splitHand = (game: Game, hand: Hand): Game => {
     console.log('Could not split anymore');
     return game;
   }
-  const index = player.hands.indexOf(hand);
+  const handIndex = player.hands.indexOf(hand);
   // split the hand in two
   const hand1: Hand = {...hand, cards: [hand.cards[0]] };
   const hand2: Hand = {...hand, cards: [hand.cards[1]] };
   // deal cards
-  dealCard(game.deck, hand1.cards, game.discard);
-  dealCard(game.deck, hand2.cards, game.discard);
-  const newHands = [...player.hands.splice(0,index), ...player.hands.splice(index+1), hand1, hand2];
+  [game.deck, hand1.cards, game.discard] = dealCardImmutable(game.deck, hand1.cards, game.discard);
+  [game.deck, hand2.cards, game.discard] = dealCardImmutable(game.deck, hand2.cards, game.discard);
+  const newHands = [...player.hands.splice(0,handIndex), ...player.hands.splice(handIndex+1), hand1, hand2];
   player.hands = newHands;
-  const newPlayers = [...game.players, player]
+  const playerIndex = players.indexOf(player);
+  const newPlayers = [...players.splice(0, playerIndex), ...players.splice(playerIndex + 1), player];
   return {...game, players: newPlayers};
 }
 

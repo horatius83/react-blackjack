@@ -1,6 +1,6 @@
 import { Card, Rank, Suit } from './card';
 import { newDecks } from './deck';
-import { Game, getHandSummary, HandResult, splitHand } from './game'
+import { dealCard, dealCardImmutable, Game, getHandSummary, HandResult, splitHand, stay } from './game'
 import { Hand } from './hand';
 import { newPlayer } from './player';
 
@@ -63,5 +63,44 @@ describe('splitHand', () => {
         const newPlayer = newNewGame.players[0];
 
         expect(newPlayer.hands.length).toBe(2);
+    });
+    test('staying on all split hands should result in round over', () => {
+        const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
+        const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
+        const game = createGame(dealerCards, playerCards);
+        const hand = game.players[0].hands[0];
+
+        const newGame = splitHand(game, hand);
+        newGame.players.forEach(p => p.hands.forEach(h => stay(h, newGame)));
+
+        const player = newGame.players[0];
+        expect(newGame.isRoundOver).toBe(true);
+        expect(newGame.players.length).toBe(1);
+        expect(newGame.players[0].hands.length).toBe(2);
+    });
+});
+
+describe('dealCard', () => {
+    test('should deal one card to the appropriate deck', () => {
+        let deck = newDecks(1);
+        let to: Array<Card> = [];
+        let discard: Array<Card> = [];
+
+        [deck, to, discard] = dealCardImmutable(deck, to, discard);
+
+        expect(deck.length).toBe(51);
+        expect(to.length).toBe(1);
+        expect(discard.length).toBe(0);
+    });
+    test('if no cards left in deck it should shuffle and draw cards from the discard', () => {
+        let discard = newDecks(1);
+        let to: Array<Card> = [];
+        let deck: Array<Card> = [];
+
+        [deck, to, discard] = dealCardImmutable(deck, to, discard);
+
+        expect(deck.length).toBe(51);
+        expect(to.length).toBe(1);
+        expect(discard.length).toBe(0);
     });
 });
