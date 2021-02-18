@@ -262,8 +262,12 @@ export const split = (oldGame: Game, hand: Hand, setGame: (game: React.SetStateA
 export const shouldShowDoubleDown = (game: Game, hand: Hand) => !hand.stayed && !hand.doubledDown && !game.isRoundOver;
 
 export const doubleDown = (game: Game, hand: Hand) => {
-  [game.deck, hand.cards, game.discard] = dealCard(game.deck, hand.cards, game.discard);
+  console.log('doubleDown');
+  hit(game, hand);
   hand.doubledDown = true;
+  if(!hand.stayed) {
+    stay(hand, game);
+  }
 };
 
 export const shouldShowStay = (game: Game, hand: Hand) => !hand.stayed && !game.isRoundOver;

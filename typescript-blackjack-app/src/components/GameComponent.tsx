@@ -20,6 +20,13 @@ const stay = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAc
   setGame(newGame);
 };
 
+const doubleDown = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
+  console.log('doubleDown');
+  let newGame = {...game};
+  blackjack.doubleDown(game, hand);
+  setGame(newGame);
+}
+
 export function GameComponent() {
   const player = newPlayer("Max", 1000); 
   const [game, setGame] = useState(blackjack.newGame([player], 100, 1000, 3.0/2.0, 1, 2));
@@ -44,7 +51,7 @@ export function GameComponent() {
             showSplit={() => false}
             insurance={blackjack.insurance}
             showInsurance={() => false}
-            doubleDown={(hand: Hand) => blackjack.doubleDown(game, hand)}
+            doubleDown={(hand: Hand) => doubleDown(hand, game, setGame)}
             showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
             showHandSummaries={() => true}
             handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
@@ -69,7 +76,7 @@ export function GameComponent() {
             showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
             insurance={blackjack.insurance}
             showInsurance={(hand: Hand) => showInsurance(hand)}
-            doubleDown={(hand: Hand) => blackjack.doubleDown(game, hand)}
+            doubleDown={(hand: Hand) => doubleDown(hand, game, setGame)}
             showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
             showHandSummaries={() => false}
             handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
