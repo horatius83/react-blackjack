@@ -22,8 +22,9 @@ const stay = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAc
 
 const doubleDown = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('doubleDown');
+  debugger;
   let newGame = {...game};
-  blackjack.doubleDown(game, hand);
+  blackjack.doubleDown(newGame, hand);
   setGame(newGame);
 }
 
