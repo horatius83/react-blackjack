@@ -3,12 +3,19 @@ import { newDecks, getValues, dealImmutable, shuffleImmutable } from "./deck";
 import { Hand } from "./hand";
 import Player from "./player";
 
+enum SurrenderRules {
+  No,
+  Early,
+  Late
+};
+
 export interface Rules {
   minimumBet: number;
   maximumBet: number;
   blackJackPayout: number;
   numberOfSplits: number;
   numberOfDecks: number;
+  surrenderRules: SurrenderRules;
 }
 
 export interface Game {
@@ -72,7 +79,8 @@ export function newGame(
           maximumBet,
           blackJackPayout,
           numberOfSplits,
-          numberOfDecks
+          numberOfDecks,
+          surrenderRules: SurrenderRules.No
         },
         isRoundOver: false
     };
