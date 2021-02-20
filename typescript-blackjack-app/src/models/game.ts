@@ -3,7 +3,7 @@ import { newDecks, getValues, dealImmutable, shuffleImmutable } from "./deck";
 import { Hand } from "./hand";
 import Player from "./player";
 
-enum SurrenderRules {
+export enum SurrenderRules {
   No,
   Early,
   Late
@@ -24,7 +24,6 @@ export interface Game {
     deck: Array<Card>;
     discard: Array<Card>;
     isRoundOver: boolean;
-    rules: Rules;
 }
 
 export function dealCard(
@@ -55,18 +54,14 @@ export function dealCards(deck: Array<Card>, to: Array<Card>, discard: Array<Car
 }
 
 export function newGame(
-    players: Array<Player>, 
-    minimumBet: number, 
-    maximumBet: number, 
-    blackJackPayout: number, 
-    numberOfSplits: number, 
-    numberOfDecks: number
+    players: Array<Player>,
+    rules: Rules
 ): Game {
-    let [deck, dealersHand, discard] = dealCards(shuffleImmutable(newDecks(numberOfDecks)), [], [], 2);
+    let [deck, dealersHand, discard] = dealCards(shuffleImmutable(newDecks(rules.numberOfDecks)), [], [], 2);
     for(const player of players) {
         player.hands.length = 1;
-        player.hands[0].bet = minimumBet;
-        player.money -= minimumBet;
+        player.hands[0].bet = rules.minimumBet;
+        player.money -= rules.minimumBet;
        [deck, player.hands[0].cards, discard] = dealCards(deck, [], discard, 2);
     }  
     return {
@@ -74,14 +69,6 @@ export function newGame(
         players,
         deck,
         discard,
-        rules: {
-          minimumBet,
-          maximumBet,
-          blackJackPayout,
-          numberOfSplits,
-          numberOfDecks,
-          surrenderRules: SurrenderRules.No
-        },
         isRoundOver: false
     };
 }
@@ -92,13 +79,13 @@ export const showHit = (game: Game, hand: Hand) => {
     && !hand.doubledDown;
 }
 
-export function hit(game: Game, hand: Hand) {
+export function hit(game: Game, hand: Hand, rules: Rules) {
     [game.deck, hand.cards, game.discard] = dealCard(game.deck, hand.cards, game.discard);
     // If value exceeds 21 then mark it as a stay
     const allValues = Array.from(getValues(hand.cards));
     const valueLessThanOrEqualTo21 = allValues.some(x => x <= 21);
     if(!valueLessThanOrEqualTo21) {
-        stay(hand, game);
+        stay(hand, game, rules);
     }
 }
 
@@ -108,7 +95,7 @@ export function haveAllPlayersStayed(game: Game): boolean {
   return game.players.reduce(g, true);
 }
 
-export function stay(hand: Hand, game: Game) {
+export function stay(hand: Hand, game: Game, rules: Rules) {
     hand.stayed = true;
 
     if(haveAllPlayersStayed(game)) {
@@ -146,8 +133,8 @@ export function stay(hand: Hand, game: Game) {
                   player.money += hand.bet;
                 }
                 hand.insurance = false;
-                player.money -= game.rules.minimumBet;
-                hand.bet = game.rules.minimumBet;
+                player.money -= rules.minimumBet;
+                hand.bet = rules.minimumBet;
                 console.log(`Player: ${player.name} $${player.money}`);
             })
         }
@@ -196,7 +183,7 @@ export const getHandSummary = (game: Game, hand: Hand): HandResult => {
   }
 }
 
-export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Game>) => void) => {
+export const newRound = (oldGame: Game, rules: Rules, setGame: (game: React.SetStateAction<Game>) => void) => {
   console.log('newRound');
   let game = {...oldGame}; 
   [game.dealer.cards, game.discard, game.deck] = dealCards(game.dealer.cards, game.discard, game.deck, game.dealer.cards.length);
@@ -205,14 +192,14 @@ export const newRound = (oldGame: Game, setGame: (game: React.SetStateAction<Gam
       for(const hand of player.hands) {
           game.discard = [...game.discard, ...hand.cards];
       }
-      player.hands = [{cards: [], bet: game.rules.minimumBet, insurance: false, stayed: false, doubledDown: false}];
+      player.hands = [{cards: [], bet: rules.minimumBet, insurance: false, stayed: false, doubledDown: false}];
       // deal new cards
      [game.deck, player.hands[0].cards, game.discard] = dealCards(game.deck, player.hands[0].cards, game.discard, 2);
   }
   const playersWithBlackjacks = game.players.filter(p => hasBlackjack(game.dealer.cards, p.hands[0].cards));
   if(playersWithBlackjacks.length > 0) {
     playersWithBlackjacks.forEach(p => {
-      p.money += p.hands[0].bet * game.rules.blackJackPayout;
+      p.money += p.hands[0].bet * rules.blackJackPayout;
     });
     game.isRoundOver = true;
   } else {
@@ -233,7 +220,7 @@ export const shouldShowSplit = (game: Game, hand: Hand) => {
   return !hand.stayed && !game.isRoundOver && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
 }
 
-export const splitHand = (game: Game, hand: Hand): Game => {
+export const splitHand = (game: Game, hand: Hand, rules: Rules): Game => {
   if(hand.cards.length !== 2) {
     return game;
   }
@@ -244,7 +231,7 @@ export const splitHand = (game: Game, hand: Hand): Game => {
     return game;
   }
   const player = players[0];
-  if(player.hands.length > game.rules.numberOfSplits) {
+  if(player.hands.length > rules.numberOfSplits) {
     console.log('Could not split anymore');
     return game;
   }
@@ -262,19 +249,19 @@ export const splitHand = (game: Game, hand: Hand): Game => {
   return {...game, players: newPlayers};
 }
 
-export const split = (oldGame: Game, hand: Hand, setGame: (game: React.SetStateAction<Game>) => void) => {
-  let game = splitHand({...oldGame}, hand);
+export const split = (oldGame: Game, hand: Hand, rules: Rules, setGame: (game: React.SetStateAction<Game>) => void) => {
+  let game = splitHand({...oldGame}, hand, rules);
   setGame(game);
 }
 
 export const shouldShowDoubleDown = (game: Game, hand: Hand) => !hand.stayed && !hand.doubledDown && !game.isRoundOver;
 
-export const doubleDown = (game: Game, hand: Hand) => {
+export const doubleDown = (game: Game, hand: Hand, rules: Rules) => {
   console.log('doubleDown');
-  hit(game, hand);
+  hit(game, hand, rules);
   hand.doubledDown = true;
   if(!hand.stayed) {
-    stay(hand, game);
+    stay(hand, game, rules);
   }
 };
 
