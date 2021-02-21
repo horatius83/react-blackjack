@@ -133,8 +133,7 @@ export function stay(hand: Hand, game: Game, rules: Rules) {
                   player.money += hand.bet;
                 }
                 hand.insurance = false;
-                player.money -= rules.minimumBet;
-                hand.bet = rules.minimumBet;
+                player.money -= hand.bet;
                 console.log(`Player: ${player.name} $${player.money}`);
             })
         }
