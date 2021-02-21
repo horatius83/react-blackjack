@@ -18,12 +18,19 @@ export interface Rules {
   surrenderRules: SurrenderRules;
 }
 
+export enum GameState {
+  Init,
+  Round,
+  RoundEnd,
+  GameOver
+};
+
 export interface Game {
     dealer: {cards: Array<Card>};
     players: Array<Player>;
     deck: Array<Card>;
     discard: Array<Card>;
-    isRoundOver: boolean;
+    state: GameState;
 }
 
 export function dealCard(
@@ -69,12 +76,12 @@ export function newGame(
         players,
         deck,
         discard,
-        isRoundOver: false
+        state: GameState.Init
     };
 }
 
 export const showHit = (game: Game, hand: Hand) => {
-  return !game.isRoundOver
+  return game.state !== GameState.RoundEnd
     && !hand.stayed
     && !hand.doubledDown;
 }
@@ -138,7 +145,7 @@ export function stay(hand: Hand, game: Game, rules: Rules) {
             })
         }
         // round end
-        game.isRoundOver = true;
+        game.state = GameState.RoundEnd;
     }
 }
 
@@ -201,15 +208,15 @@ export const newRound = (oldGame: Game, rules: Rules, setGame: (game: React.SetS
     playersWithBlackjacks.forEach(p => {
       p.money += p.hands[0].bet * rules.blackJackPayout;
     });
-    game.isRoundOver = true;
+    game.state = GameState.RoundEnd;
   } else {
-    game.isRoundOver = false;
+    game.state = GameState.Round;
   }
   setGame(game);
 };
 
 export const shouldShowInsurance = (game: Game, hand: Hand) => {
-  return !hand.insurance && !hand.stayed && !game.isRoundOver && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
+  return !hand.insurance && !hand.stayed && game.state === GameState.RoundEnd  && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
 }
 
 export const insurance = (hand: Hand) => {
@@ -217,7 +224,7 @@ export const insurance = (hand: Hand) => {
 }
 
 export const shouldShowSplit = (game: Game, hand: Hand) => {
-  return !hand.stayed && !game.isRoundOver && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
+  return !hand.stayed && game.state === GameState.Round && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
 }
 
 export const splitHand = (game: Game, hand: Hand, rules: Rules): Game => {
@@ -254,7 +261,7 @@ export const split = (oldGame: Game, hand: Hand, rules: Rules, setGame: (game: R
   setGame(game);
 }
 
-export const shouldShowDoubleDown = (game: Game, hand: Hand) => !hand.stayed && !hand.doubledDown && !game.isRoundOver;
+export const shouldShowDoubleDown = (game: Game, hand: Hand) => !hand.stayed && !hand.doubledDown && game.state === GameState.Round;
 
 export const doubleDown = (game: Game, hand: Hand, rules: Rules) => {
   console.log('doubleDown');
@@ -265,4 +272,4 @@ export const doubleDown = (game: Game, hand: Hand, rules: Rules) => {
   }
 };
 
-export const shouldShowStay = (game: Game, hand: Hand) => !hand.stayed && !game.isRoundOver;
+export const shouldShowStay = (game: Game, hand: Hand) => !hand.stayed && game.state === GameState.Round;
