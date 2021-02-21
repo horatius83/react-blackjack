@@ -22,9 +22,31 @@ const stay = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, setGame:
 
 const doubleDown = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('doubleDown');
-  debugger;
   let newGame = {...game};
   blackjack.doubleDown(newGame, hand, rules);
+  setGame(newGame);
+}
+
+const changedBet = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, value: number, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
+  console.log('changed bet');
+  if(value < rules.minimumBet) {
+    console.log(`changed bet: ${value} is less than the minimum bet of ${rules.minimumBet}`);
+    return;
+  }
+  if(value > rules.maximumBet) {
+    console.log(`changed bet: ${value} is greater than the maximum bet of ${rules.maximumBet}`);
+    return;
+  }
+  let newGame = {...game};
+  const players = newGame.players.filter(p => p.hands.filter(h => h === hand).length);
+  if(!players.length) {
+    return;
+  }
+  const player = players[0];
+  const index = player.hands.indexOf(hand);
+  hand.bet = value;
+  player.hands = [...player.hands.splice(0,index), ...player.hands.splice(index+1), hand]
+
   setGame(newGame);
 }
 
@@ -47,11 +69,13 @@ export function GameComponent() {
       return (
         <>
           <DealerComponent  cards={game.dealer.cards} showAll={true}/>
-          <HandsComponent name={
-            game.players[0].name} 
+          <HandsComponent 
+            name={game.players[0].name} 
             hands={game.players[0].hands} 
             showAll={true}
             money={game.players[0].money}
+            bets={{minimum: rules.minimumBet, maximum: rules.maximumBet}}
+            betChanged={(hand: Hand, value: number) => changedBet(hand, game, rules, value, setGame)}
             hit={(hand: Hand) => hit(hand, game, rules, setGame)}
             showHit={() => false}
             stay={(hand: Hand) => stay(hand, game, rules, setGame)}
@@ -77,6 +101,8 @@ export function GameComponent() {
             hands={game.players[0].hands} 
             showAll={true}
             money={game.players[0].money}
+            bets={{minimum: rules.minimumBet, maximum: rules.maximumBet}}
+            betChanged={(hand: Hand, value: number) => changedBet(hand, game, rules, value, setGame)}
             hit={(hand: Hand) => hit(hand, game, rules, setGame)}
             showHit={(hand: Hand) => blackjack.showHit(game, hand)}
             stay={(hand: Hand) => stay(hand, game, rules, setGame)}
