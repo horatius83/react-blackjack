@@ -1,7 +1,6 @@
 import { Card, Rank, Suit } from './card';
 import { newDecks } from './deck';
 import { dealCard, Game, GameState, getHandSummary, HandResult, splitHand, stay, SurrenderRules } from './game'
-import { Hand } from './hand';
 import { newPlayer } from './player';
 
 const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>): Game=> {
