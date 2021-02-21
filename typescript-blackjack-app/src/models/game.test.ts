@@ -1,28 +1,32 @@
 import { Card, Rank, Suit } from './card';
 import { newDecks } from './deck';
-import { dealCard, dealCardImmutable, Game, getHandSummary, HandResult, splitHand, stay } from './game'
+import { dealCard, Game, GameState, getHandSummary, HandResult, splitHand, stay, SurrenderRules } from './game'
 import { Hand } from './hand';
 import { newPlayer } from './player';
 
 const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>): Game=> {
     const player = newPlayer("Max", 100);
-    player.hands = [{cards: playerCards, bet: 100, insurance: false, stayed: false}]
+    player.hands = [{cards: playerCards, bet: 100, insurance: false, stayed: false, doubledDown: false}]
     const players = [player];
     return {
         dealer: {cards: dealerCards},
         players,
         deck: newDecks(2),
         discard: [],
-        rules: {
-            minimumBet: 10,
-            maximumBet: 100,
-            blackJackPayout: 3/2,
-            numberOfSplits: 1,
-            numberOfDecks: 2
-        },
-        isRoundOver: false
+        state: GameState.Round
     };
 };
+
+const createRules = () => {
+    return {
+        minimumBet: 100,
+        maximumBet: 1000,
+        blackJackPayout: {numerator: 3, denominator: 2}, 
+        numberOfSplits: 1,
+        numberOfDecks: 2,
+        surrenderRules: SurrenderRules.No
+    };
+}
 
 describe('getHandSummary', () => {
     test('pushes greater than 21 do not count', () => {
@@ -42,9 +46,10 @@ describe('splitHand', () => {
         const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
         const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
         const game = createGame(dealerCards, playerCards);
+        const rules = createRules();
         const hand = game.players[0].hands[0];
 
-        const newGame = splitHand(game, hand);
+        const newGame = splitHand(game, hand, rules);
 
         const player = newGame.players[0];
         expect(player.hands.length).toBe(2);
@@ -55,11 +60,12 @@ describe('splitHand', () => {
         const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
         const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
         const game = createGame(dealerCards, playerCards);
+        const rules = createRules();
         const hand = game.players[0].hands[0];
 
-        const newGame = splitHand(game, hand);
+        const newGame = splitHand(game, hand, rules);
         const player = newGame.players[0];
-        const newNewGame = splitHand(newGame, player.hands[1]);
+        const newNewGame = splitHand(newGame, player.hands[1], rules);
         const newPlayer = newNewGame.players[0];
 
         expect(newPlayer.hands.length).toBe(2);
@@ -68,13 +74,14 @@ describe('splitHand', () => {
         const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
         const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
         const game = createGame(dealerCards, playerCards);
+        const rules = createRules();
         const hand = game.players[0].hands[0];
 
-        const newGame = splitHand(game, hand);
-        newGame.players.forEach(p => p.hands.forEach(h => stay(h, newGame)));
+        const newGame = splitHand(game, hand, rules);
+        newGame.players.forEach(p => p.hands.forEach(h => stay(h, newGame, rules)));
 
         const player = newGame.players[0];
-        expect(newGame.isRoundOver).toBe(true);
+        expect(newGame.state).toBe(GameState.RoundEnd);
         expect(newGame.players.length).toBe(1);
         expect(newGame.players[0].hands.length).toBe(2);
     });
@@ -86,7 +93,7 @@ describe('dealCard', () => {
         let to: Array<Card> = [];
         let discard: Array<Card> = [];
 
-        [deck, to, discard] = dealCardImmutable(deck, to, discard);
+        [deck, to, discard] = dealCard(deck, to, discard);
 
         expect(deck.length).toBe(51);
         expect(to.length).toBe(1);
@@ -97,7 +104,7 @@ describe('dealCard', () => {
         let to: Array<Card> = [];
         let deck: Array<Card> = [];
 
-        [deck, to, discard] = dealCardImmutable(deck, to, discard);
+        [deck, to, discard] = dealCard(deck, to, discard);
 
         expect(deck.length).toBe(51);
         expect(to.length).toBe(1);
