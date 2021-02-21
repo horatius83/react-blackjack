@@ -34,7 +34,8 @@ export function RulesComponent(props: {rules: Rules, submit: (rules: Rules) => v
     const onMinimumBet = eventAsInt((rules, x) => rules.minimumBet = x);
     const onMaximumBet = eventAsInt((rules, x) => rules.maximumBet = x);
     const onNumberOfDecks = eventAsInt((rules, x) => rules.numberOfDecks = x);
-    const onBlackjackPayout = eventAsInt((rules, x) => rules.blackJackPayout = x);
+    const onBlackjackPayoutNumerator = eventAsInt((rules, x) => rules.blackJackPayout.numerator = x);
+    const onBlackjackPayoutDenominator = eventAsInt((rules, x) => rules.blackJackPayout.denominator = x);
     const onNumberOfSplits = eventAsInt((rules, x) => rules.numberOfSplits = x);
     const onSurrenderRules = (event: ChangeEvent<HTMLSelectElement>) => {
         const newRules = {...rules};
@@ -44,36 +45,39 @@ export function RulesComponent(props: {rules: Rules, submit: (rules: Rules) => v
 
     return (
         <>
-        <h1>Game Rules</h1>
-        <form onSubmit={onSubmit}>
-            <div>
-                <input type="submit" value="Begin" />
-            </div>
-            <div>
-                <label>Minimum Bet: <input type="number" step="10" min="0" value={rules.minimumBet} onChange={onMinimumBet}/></label>
-            </div>
-            <div>
-                <label>Maximum Bet: <input type="number" step="10" min={rules.minimumBet} value={rules.maximumBet} onChange={onMaximumBet}/></label>
-            </div>
-            <div>
-                <label>Number of Decks: <input type="number" min="1" value={rules.numberOfDecks} onChange={onNumberOfDecks}/></label>
-            </div>
-            <div>
-                <label>Blackjack Payout: <input type="number" value={rules.blackJackPayout} onChange={onBlackjackPayout}/></label>
-            </div>
-            <div>
-                <label>Number of splits: <input type="number" min="0" value={rules.numberOfSplits} onChange={onNumberOfSplits}/></label>
-            </div>
-            <div>
-                <label>Surrender Rules: 
-                    <select value={surrenderRules} onChange={onSurrenderRules}>
-                        <option value="None">None</option> 
-                        <option value="Early">Early</option>
-                        <option value="Late">Late</option>
-                    </select>
-                </label>
-            </div>
-        </form>
+            <h1>Game Rules</h1>
+            <form onSubmit={onSubmit}>
+                <div>
+                    <input type="submit" value="Begin" />
+                </div>
+                <div>
+                    <label>Minimum Bet: <input type="number" step="10" min="0" value={rules.minimumBet} onChange={onMinimumBet}/></label>
+                </div>
+                <div>
+                    <label>Maximum Bet: <input type="number" step="10" min={rules.minimumBet} value={rules.maximumBet} onChange={onMaximumBet}/></label>
+                </div>
+                <div>
+                    <label>Number of Decks: <input type="number" min="1" value={rules.numberOfDecks} onChange={onNumberOfDecks}/></label>
+                </div>
+                <div>
+                    <label>Blackjack Payout: 
+                        <input type="number" value={rules.blackJackPayout.numerator} onChange={onBlackjackPayoutNumerator}/> to
+                        <input type="number" value={rules.blackJackPayout.denominator} onChange={onBlackjackPayoutDenominator}/>
+                    </label> 
+                </div>
+                <div>
+                    <label>Number of Splits: <input type="number" min="0" value={rules.numberOfSplits} onChange={onNumberOfSplits}/></label>
+                </div>
+                <div>
+                    <label>Surrender Rules: 
+                        <select onChange={onSurrenderRules}>
+                            <option value="None">None</option> 
+                            <option value="Early">Early</option>
+                            <option value="Late">Late</option>
+                        </select>
+                    </label>
+                </div>
+            </form>
         </>
     );
 }

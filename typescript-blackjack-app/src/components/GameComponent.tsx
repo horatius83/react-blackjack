@@ -55,7 +55,7 @@ export function GameComponent() {
   const [rules, setRules] = useState({
     minimumBet: 100,
     maximumBet: 1000,
-    blackJackPayout: 3 / 2,
+    blackJackPayout: {numerator: 3, denominator: 2},
     numberOfSplits: 1,
     numberOfDecks: 2,
     surrenderRules: blackjack.SurrenderRules.No
@@ -113,62 +113,6 @@ export function GameComponent() {
       } break;
       default: return (<><h1>Not Implemented</h1></>);
     }
-    /*
-    if(game.state === blackjack.GameState.Round) {
-      return (
-        <>
-          <DealerComponent  cards={game.dealer.cards} showAll={true}/>
-          <HandsComponent 
-            name={game.players[0].name} 
-            hands={game.players[0].hands} 
-            showAll={true}
-            money={game.players[0].money}
-            bets={{minimum: rules.minimumBet, maximum: rules.maximumBet}}
-            betChanged={(hand: Hand, value: number) => changedBet(hand, game, rules, value, setGame)}
-            hit={(hand: Hand) => hit(hand, game, rules, setGame)}
-            showHit={() => false}
-            stay={(hand: Hand) => stay(hand, game, rules, setGame)}
-            showStay={(hand: Hand) => blackjack.shouldShowStay(game, hand)}
-            split={(hand: Hand) => blackjack.split(game, hand, rules, setGame)}
-            showSplit={() => false}
-            insurance={blackjack.insurance}
-            showInsurance={() => false}
-            doubleDown={(hand: Hand) => doubleDown(hand, game, rules, setGame)}
-            showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
-            showHandSummaries={() => true}
-            handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
-          />
-          <button onClick={() => blackjack.newRound(game, rules, setGame)}>New Round</button>
-        </>
-      );
-    } else {
-      return (
-        <div className="game">
-          <DealerComponent  cards={game.dealer.cards} showAll={false}/>
-          <HandsComponent name={
-            game.players[0].name} 
-            hands={game.players[0].hands} 
-            showAll={true}
-            money={game.players[0].money}
-            bets={{minimum: rules.minimumBet, maximum: rules.maximumBet}}
-            betChanged={(hand: Hand, value: number) => changedBet(hand, game, rules, value, setGame)}
-            hit={(hand: Hand) => hit(hand, game, rules, setGame)}
-            showHit={(hand: Hand) => blackjack.showHit(game, hand)}
-            stay={(hand: Hand) => stay(hand, game, rules, setGame)}
-            showStay={(hand: Hand) => blackjack.shouldShowStay(game, hand)}
-            split={(hand: Hand) => blackjack.split(game, hand, rules, setGame)}
-            showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
-            insurance={blackjack.insurance}
-            showInsurance={(hand: Hand) => showInsurance(hand)}
-            doubleDown={(hand: Hand) => doubleDown(hand, game, rules, setGame)}
-            showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
-            showHandSummaries={() => false}
-            handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
-          />
-        </div>
-      ); 
-    }
-    */
   }
 
   return displayComponent(game);

@@ -12,7 +12,7 @@ export enum SurrenderRules {
 export interface Rules {
   minimumBet: number;
   maximumBet: number;
-  blackJackPayout: number;
+  blackJackPayout: {numerator: number, denominator: number}; // 3:2 = {numerator: 3, denominator: 2}
   numberOfSplits: number;
   numberOfDecks: number;
   surrenderRules: SurrenderRules;
@@ -206,7 +206,7 @@ export const newRound = (oldGame: Game, rules: Rules, setGame: (game: React.SetS
   const playersWithBlackjacks = game.players.filter(p => hasBlackjack(game.dealer.cards, p.hands[0].cards));
   if(playersWithBlackjacks.length > 0) {
     playersWithBlackjacks.forEach(p => {
-      p.money += p.hands[0].bet * rules.blackJackPayout;
+      p.money += p.hands[0].bet * (rules.blackJackPayout.numerator / rules.blackJackPayout.denominator);
     });
     game.state = GameState.RoundEnd;
   } else {
