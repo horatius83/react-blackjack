@@ -191,7 +191,8 @@ export const newRound = (oldGame: Game, rules: Rules, setGame: (game: React.SetS
       for(const hand of player.hands) {
           game.discard = [...game.discard, ...hand.cards];
       }
-      player.hands = [{cards: [], bet: rules.minimumBet, insurance: false, stayed: false, doubledDown: false}];
+      const bet = player.hands[0].bet;
+      player.hands = [{cards: [], bet, insurance: false, stayed: false, doubledDown: false}];
       // deal new cards
      [game.deck, player.hands[0].cards, game.discard] = dealCards(game.deck, player.hands[0].cards, game.discard, 2);
   }
