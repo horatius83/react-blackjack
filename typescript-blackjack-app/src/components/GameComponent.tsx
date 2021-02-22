@@ -101,7 +101,7 @@ export function GameComponent() {
               showInsurance={(hand: Hand) => showInsurance(hand)}
               doubleDown={(hand: Hand) => doubleDown(hand, game, rules, setGame)}
               showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}
-              showHandSummaries={() => false}
+              showHandSummaries={() => game.state === blackjack.GameState.RoundEnd}
               handSummary={(hand: Hand) => blackjack.getHandSummary(game, hand)}
             />
             {game.state === blackjack.GameState.RoundEnd 
