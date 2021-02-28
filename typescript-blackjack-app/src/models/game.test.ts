@@ -73,6 +73,7 @@ describe('splitHand', () => {
         const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
         const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
         const game = createGame(dealerCards, playerCards);
+        game.players[0].money = 1000;
         const rules = createRules();
         const hand = game.players[0].hands[0];
 
@@ -126,7 +127,7 @@ describe('stay', () => {
 
             game.players.forEach(p => p.hands.forEach(h => stay(h, game, rules)));
                
-            expect(player.money).toBe(initiallMoney + 150);
+            expect(player.money).toBe(initiallMoney + 50);
         });
         test('if you lose the hand but the dealer has 21 you should not lose your bet', () => {
 

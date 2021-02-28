@@ -66,7 +66,7 @@ export function HandsComponent(props: {
           step={10}
           onChange={(event) => betChanged(hand, event)}
           readOnly={hand.cards.length !== 2}></input> Money: ${props.money}</div>
-        <div>Insurance <input type="checkbox" checked={hand.insurance}></input></div>
+        { hand.insurance ? (<div>Insurance <input type="checkbox" checked={hand.insurance}></input></div>): null}
         <PlayerControlsComponent 
           hit={() => props.hit(hand)}
           showHit={() => props.showHit(hand)}

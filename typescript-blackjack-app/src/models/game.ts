@@ -20,7 +20,6 @@ export interface Rules {
 
 export enum GameState {
   Init,
-  PlaceBets,
   Round,
   RoundEnd,
   GameOver
@@ -131,7 +130,7 @@ export const payBets = (hand: Hand, dealer: Array<Card>): Array<{paid: number, r
   }
 
   if (dealerBusted) {
-    results.push({paid: hand.bet, reason: 'dealer busted'});
+    results.push({paid: hand.bet * 2, reason: 'dealer busted'});
     return results;
   }
 
@@ -143,7 +142,7 @@ export const payBets = (hand: Hand, dealer: Array<Card>): Array<{paid: number, r
   } else if (dealerHighestValue === playerHighestValue) {
     results.push({paid: 0, reason: 'push'});
   } else {
-    results.push({paid: hand.bet, reason: 'player won'});
+    results.push({paid: hand.bet * 2, reason: 'player won'});
   }
   return results;
 }
@@ -170,7 +169,6 @@ export function stay(hand: Hand, game: Game, rules: Rules) {
         // Pay out bets
         for (const player of game.players) {
             player.hands.forEach(hand => {
-              
               console.log(`Player: ${player.name} $${player.money}`);
               const bets = payBets(hand, game.dealer.cards);
               const allBets = bets.reduce((x, y) => x + y.paid, 0);
