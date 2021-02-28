@@ -4,7 +4,7 @@ import { dealCard, Game, GameState, getHandSummary, HandResult, splitHand, stay,
 import { newPlayer } from './player';
 
 const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>): Game=> {
-    const player = newPlayer("Max", 100);
+    const player = newPlayer("Max", 1000);
     player.hands = [{cards: playerCards, bet: 100, insurance: false, stayed: false, doubledDown: false}]
     const players = [player];
     return {
@@ -73,7 +73,6 @@ describe('splitHand', () => {
         const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
         const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
         const game = createGame(dealerCards, playerCards);
-        game.players[0].money = 1000;
         const rules = createRules();
         const hand = game.players[0].hands[0];
 
@@ -130,7 +129,19 @@ describe('stay', () => {
             expect(player.money).toBe(initiallMoney + 50);
         });
         test('if you lose the hand but the dealer has 21 you should not lose your bet', () => {
+            const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Jack, suit: Suit.Hearts}];
+            const playerCards: Array<Card> = [{rank: Rank.Ten, suit: Suit.Clubs}, {rank: Rank.Six, suit: Suit.Spades}];
+            const game = createGame(dealerCards, playerCards);
+            const rules = createRules();
+            const player = game.players[0];
+            const hand = player.hands[0];
+            const initiallMoney = player.money;
+            hand.insurance = true;
+            hand.bet = 100;
 
+            game.players.forEach(p => p.hands.forEach(h => stay(h, game, rules)));
+               
+            expect(player.money).toBe(initiallMoney - 100);
         });
         test('if you lose the hand and you have insurance then you should lose 1.5x your bet', () => {
 
