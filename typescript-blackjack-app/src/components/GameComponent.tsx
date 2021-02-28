@@ -5,6 +5,7 @@ import { DealerComponent } from './DealerComponent';
 import { newPlayer } from '../models/player';
 import { Hand } from '../models/hand';
 import { RulesComponent } from './RulesComponent';
+import { GameOverComponent } from './GameOverComponent';
 
 const hit = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('hit');
@@ -51,6 +52,13 @@ const changedBet = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, va
   setGame(newGame);
 }
 
+const restartGame = (game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
+  console.log('restartGame');
+  const newGame = {...game};
+  newGame.state = blackjack.GameState.Init;
+  setGame(newGame);
+}
+
 export function GameComponent() {
   const [rules, setRules] = useState({
     minimumBet: 100,
@@ -66,7 +74,6 @@ export function GameComponent() {
   const showInsurance = (hand: Hand) => blackjack.shouldShowInsurance(game, hand);
 
   const updateRules = (rules: blackjack.Rules) => {
-    debugger;
     if(game.state === blackjack.GameState.Init) {
       setRules({...rules});  
       game.state = blackjack.GameState.Round;
@@ -76,11 +83,10 @@ export function GameComponent() {
 
   const displayComponent = (game: blackjack.Game) => {
     switch(game.state) {
-      case blackjack.GameState.Init: {
+      case blackjack.GameState.Init: 
         return (<RulesComponent rules={rules} submit={updateRules}/>);
-      } break;
       case blackjack.GameState.Round: 
-      case blackjack.GameState.RoundEnd: {
+      case blackjack.GameState.RoundEnd:
         return (
           <>
             <DealerComponent  cards={game.dealer.cards} showAll={game.state === blackjack.GameState.RoundEnd}/>
@@ -110,7 +116,9 @@ export function GameComponent() {
             }
           </>
         );
-      } break;
+      case blackjack.GameState.GameOver: {
+        return <GameOverComponent restart={() => restartGame(game, setGame)} />
+      }
       default: return (<><h1>Not Implemented</h1></>);
     }
   }

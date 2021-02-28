@@ -145,7 +145,11 @@ export function stay(hand: Hand, game: Game, rules: Rules) {
             })
         }
         // round end
-        game.state = GameState.RoundEnd;
+        if(game.players[0].money <= 0) {
+          game.state = GameState.GameOver;
+        } else {
+          game.state = GameState.RoundEnd;
+        }
     }
 }
 
