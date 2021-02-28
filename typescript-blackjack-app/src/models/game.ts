@@ -20,6 +20,7 @@ export interface Rules {
 
 export enum GameState {
   Init,
+  PlaceBets,
   Round,
   RoundEnd,
   GameOver
@@ -102,6 +103,51 @@ export function haveAllPlayersStayed(game: Game): boolean {
   return game.players.reduce(g, true);
 }
 
+export const payBets = (hand: Hand, dealer: Array<Card>): Array<{paid: number, reason: string}> => {
+  const dealerHasAnAce = dealer.some(c => c.rank === Rank.Ace);
+  const dealerHasBlackjack = dealer.length === 2 
+    && dealerHasAnAce
+    && dealer.some(c => tenCards.has(c.rank));
+  const dealerHandValues = Array.from(getValues(dealer));
+  const dealerHandValuesUnder22 = dealerHandValues.filter(v => v <= 21);
+  const dealerBusted = dealerHandValuesUnder22.length === 0;
+  const playerHandValues = Array.from(getValues(hand.cards));
+  const playerHandValuesUnder22 = playerHandValues.filter(v => v <= 21);
+  const playerBusted = playerHandValuesUnder22.length === 0;
+  const results: Array<{paid: number, reason: string}> = [];
+
+  // insurance
+  if(hand.insurance) {
+    if (dealerHasBlackjack) {
+      results.push({paid: hand.bet, reason: 'insurance'});
+    } else {
+      results.push({paid: -(hand.bet / 2), reason: 'insurance'});
+    }
+  }
+
+  if (playerBusted) {
+    results.push({paid: -hand.bet, reason: 'player busted'});
+    return results;
+  }
+
+  if (dealerBusted) {
+    results.push({paid: hand.bet, reason: 'dealer busted'});
+    return results;
+  }
+
+  const dealerHighestValue = dealerHandValuesUnder22.reduce((x,y) => x > y ? x : y);
+  const playerHighestValue = playerHandValuesUnder22.reduce((x,y) => x > y ? x : y);
+
+  if(dealerHighestValue > playerHighestValue) {
+    results.push({paid: -hand.bet, reason: 'dealer won'});
+  } else if (dealerHighestValue === playerHighestValue) {
+    results.push({paid: 0, reason: 'push'});
+  } else {
+    results.push({paid: hand.bet, reason: 'player won'});
+  }
+  return results;
+}
+
 export function stay(hand: Hand, game: Game, rules: Rules) {
     hand.stayed = true;
 
@@ -124,25 +170,15 @@ export function stay(hand: Hand, game: Game, rules: Rules) {
         // Pay out bets
         for (const player of game.players) {
             player.hands.forEach(hand => {
-                console.log(`Player: ${player.name} $${player.money}`);
-                const handValues = Array.from(getValues(hand.cards));
-                if (handValues.some(x => x <= 21 && x > dealerMaxValue)) {
-                    player.money += hand.bet * 2;
-                } else if(handValues.some(x => x <= 21 && x === dealerMaxValue)) {
-                    player.money += hand.bet;
-                }
-                // check insurance
-                if (hand.insurance 
-                  && game.dealer.cards.length === 2
-                  && game.dealer.cards.some(x => x.rank === Rank.Ace)
-                  && game.dealer.cards.some(x => tenCards.has(x.rank))
-                ) {
-                  player.money += hand.bet;
-                }
-                hand.insurance = false;
-                player.money -= hand.bet;
-                console.log(`Player: ${player.name} $${player.money}`);
-            })
+              
+              console.log(`Player: ${player.name} $${player.money}`);
+              const bets = payBets(hand, game.dealer.cards);
+              const allBets = bets.reduce((x, y) => x + y.paid, 0);
+              player.money += allBets;
+              player.money -= hand.bet;
+              hand.insurance = false;
+              console.log(`Player: ${player.name} $${player.money}`);
+            });
         }
         // round end
         if(game.players[0].money <= 0) {
@@ -220,7 +256,7 @@ export const newRound = (oldGame: Game, rules: Rules, setGame: (game: React.SetS
 };
 
 export const shouldShowInsurance = (game: Game, hand: Hand) => {
-  return !hand.insurance && !hand.stayed && game.state === GameState.RoundEnd  && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
+  return !hand.insurance && !hand.stayed && game.state === GameState.Round  && game.dealer.cards.length === 2 && game.dealer.cards[1].rank === Rank.Ace 
 }
 
 export const insurance = (hand: Hand) => {

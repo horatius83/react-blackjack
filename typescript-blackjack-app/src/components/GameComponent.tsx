@@ -73,6 +73,13 @@ export function GameComponent() {
 
   const showInsurance = (hand: Hand) => blackjack.shouldShowInsurance(game, hand);
 
+  const insurance = (hand: Hand, game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
+    console.log('insurance');
+    const newGame = {...game};
+    hand.insurance = true;
+    setGame(newGame);
+  }
+
   const updateRules = (rules: blackjack.Rules) => {
     if(game.state === blackjack.GameState.Init) {
       setRules({...rules});  
@@ -103,7 +110,7 @@ export function GameComponent() {
               showStay={(hand: Hand) => blackjack.shouldShowStay(game, hand)}
               split={(hand: Hand) => blackjack.split(game, hand, rules, setGame)}
               showSplit={(h: Hand) => blackjack.shouldShowSplit(game, h)}
-              insurance={blackjack.insurance}
+              insurance={(hand: Hand) => insurance(hand, game, setGame)}
               showInsurance={(hand: Hand) => showInsurance(hand)}
               doubleDown={(hand: Hand) => doubleDown(hand, game, rules, setGame)}
               showDoubleDown={(hand: Hand) => blackjack.shouldShowDoubleDown(game, hand)}

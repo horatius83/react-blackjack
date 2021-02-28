@@ -110,3 +110,32 @@ describe('dealCard', () => {
         expect(discard.length).toBe(0);
     });
 });
+
+describe('stay', () => {
+    describe('insurance', () => {
+        test('if you win the hand you should still deduct insurance', () => {
+            const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Six, suit: Suit.Hearts}];
+            const playerCards: Array<Card> = [{rank: Rank.Ten, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
+            const game = createGame(dealerCards, playerCards);
+            const rules = createRules();
+            const player = game.players[0];
+            const hand = player.hands[0];
+            const initiallMoney = player.money;
+            hand.insurance = true;
+            hand.bet = 100;
+
+            game.players.forEach(p => p.hands.forEach(h => stay(h, game, rules)));
+               
+            expect(player.money).toBe(initiallMoney + 150);
+        });
+        test('if you lose the hand but the dealer has 21 you should not lose your bet', () => {
+
+        });
+        test('if you lose the hand and you have insurance then you should lose 1.5x your bet', () => {
+
+        });
+        test('if no insurance then make sure bet is correct', () => {
+
+        });
+    });
+});
