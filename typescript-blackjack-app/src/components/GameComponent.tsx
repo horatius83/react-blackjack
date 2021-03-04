@@ -46,6 +46,8 @@ const changedBet = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, va
   }
   const player = players[0];
   const index = player.hands.indexOf(hand);
+  const delta = hand.bet - value;
+  player.money += delta;
   hand.bet = value;
   player.hands = [...player.hands.splice(0,index), ...player.hands.splice(index+1), hand]
 

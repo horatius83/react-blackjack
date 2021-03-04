@@ -140,7 +140,7 @@ export const payBets = (hand: Hand, dealer: Array<Card>): Array<{paid: number, r
   if(dealerHighestValue > playerHighestValue) {
     results.push({paid: -hand.bet, reason: 'dealer won'});
   } else if (dealerHighestValue === playerHighestValue) {
-    results.push({paid: 0, reason: 'push'});
+    results.push({paid: hand.bet, reason: 'push'});
   } else {
     results.push({paid: hand.bet * 2, reason: 'player won'});
   }
@@ -173,7 +173,6 @@ export function stay(hand: Hand, game: Game, rules: Rules) {
               const bets = payBets(hand, game.dealer.cards);
               const allBets = bets.reduce((x, y) => x + y.paid, 0);
               player.money += allBets;
-              player.money -= hand.bet;
               hand.insurance = false;
               console.log(`Player: ${player.name} $${player.money}`);
             });
@@ -237,6 +236,7 @@ export const newRound = (oldGame: Game, rules: Rules, setGame: (game: React.SetS
           game.discard = [...game.discard, ...hand.cards];
       }
       const bet = player.hands[0].bet;
+      player.money -= bet;
       player.hands = [{cards: [], bet, insurance: false, stayed: false, doubledDown: false}];
       // deal new cards
      [game.deck, player.hands[0].cards, game.discard] = dealCards(game.deck, player.hands[0].cards, game.discard, 2);
