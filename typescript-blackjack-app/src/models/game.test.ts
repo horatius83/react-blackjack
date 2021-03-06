@@ -1,6 +1,6 @@
 import { Card, Rank, Suit } from './card';
 import { newDecks } from './deck';
-import { dealCard, Game, GameState, getHandSummary, HandResult, splitHand, stay, SurrenderRules } from './game'
+import { dealCard, Game, GameState, getHandSummary, HandResult, shouldShowSplit, splitHand, stay, SurrenderRules } from './game'
 import { newPlayer } from './player';
 
 const createGame = (dealerCards: Array<Card>, playerCards: Array<Card>): Game=> {
@@ -85,6 +85,21 @@ describe('splitHand', () => {
         expect(newGame.players[0].hands.length).toBe(2);
     });
 });
+describe('shouldShowSplit', () => {
+    test('should not show if the player does not have enough money to split', () => {
+        const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
+        const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
+        const game = createGame(dealerCards, playerCards);
+        const rules = createRules();
+        const hand = game.players[0].hands[0];
+        const player = game.players[0];
+        player.money = hand.bet;
+
+        const sh = shouldShowSplit(game, hand);
+
+        expect(sh).toBe(false);
+    });
+})
 
 describe('dealCard', () => {
     test('should deal one card to the appropriate deck', () => {

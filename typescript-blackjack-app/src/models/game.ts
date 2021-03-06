@@ -262,7 +262,12 @@ export const insurance = (hand: Hand) => {
 }
 
 export const shouldShowSplit = (game: Game, hand: Hand) => {
-  return !hand.stayed && game.state === GameState.Round && hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank;
+  const player = game.players.filter(p => p.hands.some(h => h === hand))[0];
+  return !hand.stayed 
+    && player.money >= hand.bet
+    && game.state === GameState.Round
+    && hand.cards.length === 2
+    && hand.cards[0].rank === hand.cards[1].rank;
 }
 
 export const splitHand = (game: Game, hand: Hand, rules: Rules): Game => {
