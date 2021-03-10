@@ -7,3 +7,13 @@ export interface Hand {
     stayed: boolean,
     doubledDown: boolean
 }
+
+export const createHand = (cards: Array<Card>, bet: number): Hand => {
+    return {
+        cards,
+        bet,
+        insurance: false,
+        stayed: false,
+        doubledDown: false
+    }
+}

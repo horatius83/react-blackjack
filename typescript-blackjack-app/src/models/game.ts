@@ -1,6 +1,6 @@
 import { Card, Rank } from "./card";
 import { newDecks, getValues, dealImmutable, shuffleImmutable } from "./deck";
-import { Hand } from "./hand";
+import { createHand, Hand } from "./hand";
 import Player from "./player";
 
 export enum SurrenderRules {
@@ -66,8 +66,7 @@ export function newGame(
 ): Game {
     let [deck, dealersHand, discard] = dealCards(shuffleImmutable(newDecks(rules.numberOfDecks)), [], [], 2);
     for(const player of players) {
-        player.hands.length = 1;
-        player.hands[0].bet = rules.minimumBet;
+        player.hands = [createHand([], rules.minimumBet)];
         player.money -= rules.minimumBet;
        [deck, player.hands[0].cards, discard] = dealCards(deck, [], discard, 2);
     }  

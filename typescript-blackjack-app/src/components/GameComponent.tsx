@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as blackjack from '../models/game';
 import { HandsComponent } from './HandsComponent';
 import { DealerComponent } from './DealerComponent';
-import { newPlayer } from '../models/player';
+import Player, { newPlayer } from '../models/player';
 import { Hand } from '../models/hand';
 import { RulesComponent } from './RulesComponent';
 import { GameOverComponent } from './GameOverComponent';
@@ -50,13 +50,12 @@ const changedBet = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, va
   player.money += delta;
   hand.bet = value;
   player.hands = [...player.hands.splice(0,index), ...player.hands.splice(index+1), hand]
-
   setGame(newGame);
 }
 
-const restartGame = (game: blackjack.Game, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
+const restartGame = (game: blackjack.Game, rules: blackjack.Rules, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('restartGame');
-  const newGame = {...game};
+  const newGame = blackjack.newGame(game.players.map<Player>(p => {return {...p, hands: [], money: 1000}}), rules);
   newGame.state = blackjack.GameState.Init;
   setGame(newGame);
 }
@@ -128,7 +127,7 @@ export function GameComponent() {
           </>
         );
       case blackjack.GameState.GameOver: {
-        return <GameOverComponent restart={() => restartGame(game, setGame)} />
+        return <GameOverComponent restart={() => restartGame(game, rules, setGame)} />
       }
       default: return (<><h1>Not Implemented</h1></>);
     }
