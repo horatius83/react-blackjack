@@ -68,7 +68,7 @@ export function RulesComponent(props: {rules: Rules, submit: (rules: Rules) => v
                 <div>
                     <label>Number of Splits: <input type="number" min="0" value={rules.numberOfSplits} onChange={onNumberOfSplits}/></label>
                 </div>
-                <div>
+                {/*<div>
                     <label>Surrender Rules: 
                         <select onChange={onSurrenderRules}>
                             <option value="None">None</option> 
@@ -76,7 +76,7 @@ export function RulesComponent(props: {rules: Rules, submit: (rules: Rules) => v
                             <option value="Late">Late</option>
                         </select>
                     </label>
-                </div>
+                </div>*/}
             </form>
         </>
     );

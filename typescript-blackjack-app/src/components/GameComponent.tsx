@@ -6,6 +6,7 @@ import Player, { newPlayer } from '../models/player';
 import { Hand } from '../models/hand';
 import { RulesComponent } from './RulesComponent';
 import { GameOverComponent } from './GameOverComponent';
+import { PlaceBetComponent } from './BetComponent';
 
 const hit = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('hit');
@@ -29,7 +30,7 @@ const doubleDown = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, se
   setGame(newGame);
 }
 
-const changedBet = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, value: number, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
+const setBet = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, value: number, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('changed bet');
   if(value < rules.minimumBet) {
     console.log(`changed bet: ${value} is less than the minimum bet of ${rules.minimumBet}`);
@@ -50,6 +51,7 @@ const changedBet = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, va
   player.money += delta;
   hand.bet = value;
   player.hands = [...player.hands.splice(0,index), ...player.hands.splice(index+1), hand]
+  newGame.state = blackjack.GameState.Round;
   setGame(newGame);
 }
 
@@ -86,7 +88,7 @@ export function GameComponent() {
       setRules({...rules});  
       game.players.forEach(p => p.money = 1000);
       const newGame = blackjack.newGame(game.players, rules);
-      newGame.state = blackjack.GameState.Round;
+      newGame.state = blackjack.GameState.PlaceBets;
       setGame(newGame);
     }
   };
@@ -95,6 +97,15 @@ export function GameComponent() {
     switch(game.state) {
       case blackjack.GameState.Init: 
         return (<RulesComponent rules={rules} submit={updateRules}/>);
+      case blackjack.GameState.PlaceBets:
+        return (
+          <PlaceBetComponent
+            onBetChanged={(v: number) => setBet(game.players[0].hands[0], game, rules, v, setGame)}
+            bets={{minimum: rules.minimumBet, maximum: rules.maximumBet}}
+            previousBet={game.players[0].hands[0].bet}
+            money={game.players[0].money}
+          />
+        );
       case blackjack.GameState.Round: 
       case blackjack.GameState.RoundEnd:
         return (
@@ -106,7 +117,6 @@ export function GameComponent() {
               showAll={true}
               money={game.players[0].money}
               bets={{minimum: rules.minimumBet, maximum: rules.maximumBet}}
-              betChanged={(hand: Hand, value: number) => changedBet(hand, game, rules, value, setGame)}
               hit={(hand: Hand) => hit(hand, game, rules, setGame)}
               showHit={(hand: Hand) => blackjack.showHit(game, hand)}
               stay={(hand: Hand) => stay(hand, game, rules, setGame)}

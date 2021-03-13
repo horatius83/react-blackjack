@@ -23,7 +23,6 @@ export function HandsComponent(props: {
   showDoubleDown: (hand: Hand) => boolean,
   showHandSummaries: () => boolean,
   handSummary: (h: Hand) => HandResult,
-  betChanged: (h: Hand, v: number) => void
 }) {
   function getHand(hand: Hand, index: number) {
     const sliceIndex = props.showAll ? 0 : 1;
@@ -50,9 +49,6 @@ export function HandsComponent(props: {
         return null;
       }
     }
-    function betChanged(hand: Hand, event: React.FormEvent<HTMLInputElement>) {
-      props.betChanged(hand, parseInt(event.currentTarget.value))
-    }
     return (
       <>
         {displayHandSummary(hand)}
@@ -64,8 +60,7 @@ export function HandsComponent(props: {
           max={Math.min(props.bets.maximum, props.bets.maximum)} 
           value={hand.bet} 
           step={10}
-          onChange={(event) => betChanged(hand, event)}
-          readOnly={hand.cards.length !== 2}></input> Money: ${props.money}</div>
+          readOnly={true}></input> Money: ${props.money}</div>
         { hand.insurance ? (<div>Insurance <input type="checkbox" checked={hand.insurance}></input></div>): null}
         <PlayerControlsComponent 
           hit={() => props.hit(hand)}

@@ -20,6 +20,7 @@ export interface Rules {
 
 export enum GameState {
   Init,
+  PlaceBets,
   Round,
   RoundEnd,
   GameOver
@@ -247,7 +248,7 @@ export const newRound = (oldGame: Game, rules: Rules, setGame: (game: React.SetS
     });
     game.state = GameState.RoundEnd;
   } else {
-    game.state = GameState.Round;
+    game.state = GameState.PlaceBets;
   }
   setGame(game);
 };
