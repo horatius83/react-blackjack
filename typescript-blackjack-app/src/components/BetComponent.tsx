@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export function PlaceBetComponent(props: {
     onBetChanged: (value: number) => void, 
@@ -7,6 +7,10 @@ export function PlaceBetComponent(props: {
     money: number
 }) {
     const [bet, setBet] = useState(props.previousBet);
+    const placeBetButton = useRef<HTMLButtonElement>(null);
+    useEffect(() => {
+        placeBetButton?.current?.focus();
+    },[]);
 
     const changeBet = (event: React.FormEvent<HTMLInputElement>) => {
         const newBet = parseInt(event.currentTarget.value);
@@ -14,7 +18,6 @@ export function PlaceBetComponent(props: {
     };
 
     const submitBet = (event: React.FormEvent<HTMLButtonElement>) => {
-console.log('PlaceBetComponent: submitBet');
         props.onBetChanged(bet);
     };
 
@@ -31,7 +34,7 @@ console.log('PlaceBetComponent: submitBet');
                 onChange={(event) => changeBet(event)}
                 ></input> 
             Money: ${props.money}</div>
-            <button onClick={(event) => submitBet(event)}>Place Bet</button>
+            <button onClick={(event) => submitBet(event)} ref={placeBetButton}>Place Bet</button>
         </>
     );
 }

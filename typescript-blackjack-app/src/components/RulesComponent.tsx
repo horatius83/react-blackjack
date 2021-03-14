@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Rules, SurrenderRules } from "../models/game";
 
 const surrenderToString = new Map<SurrenderRules, string>([
@@ -18,6 +18,10 @@ export function RulesComponent(props: {rules: Rules, money: {starting: number, m
     const surrenderRules = surrenderToString.get(props.rules.surrenderRules) as string;
     const [rules, setRules] = useState({...props.rules});
     const [startingMoney, setMoney] = useState(props.money.starting);
+    const startButton = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        startButton.current?.focus();
+    }, []);
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         props.submit({
@@ -53,7 +57,7 @@ export function RulesComponent(props: {rules: Rules, money: {starting: number, m
             <h1>Game Rules</h1>
             <form onSubmit={onSubmit}>
                 <div>
-                    <input type="submit" value="Begin" />
+                    <input type="submit" value="Begin" ref={startButton}/>
                 </div>
                 <div>
                     <label>Minimum Bet: <input type="number" step="10" min="0" value={rules.minimumBet} onChange={onMinimumBet}/></label>
