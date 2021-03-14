@@ -20,6 +20,7 @@ console.log('PlaceBetComponent: submitBet');
 
     return (
         <>
+            <h1>Place Bet</h1>
             <div>Bet: $
                 <input 
                 type="number" 

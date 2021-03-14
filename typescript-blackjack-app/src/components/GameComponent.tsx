@@ -83,10 +83,10 @@ export function GameComponent() {
     setGame(newGame);
   }
 
-  const updateRules = (rules: blackjack.Rules) => {
+  const updateRules = (rules: blackjack.Rules, startingMoney: number) => {
     if(game.state === blackjack.GameState.Init) {
       setRules({...rules});  
-      game.players.forEach(p => p.money = 1000);
+      game.players.forEach(p => p.money = startingMoney);
       const newGame = blackjack.newGame(game.players, rules);
       newGame.state = blackjack.GameState.PlaceBets;
       setGame(newGame);
@@ -96,7 +96,7 @@ export function GameComponent() {
   const displayComponent = (game: blackjack.Game) => {
     switch(game.state) {
       case blackjack.GameState.Init: 
-        return (<RulesComponent rules={rules} submit={updateRules}/>);
+        return (<RulesComponent rules={rules} money={{minimum: 100, starting: 1000}} submit={updateRules}/>);
       case blackjack.GameState.PlaceBets:
         return (
           <PlaceBetComponent

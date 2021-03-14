@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Rules, SurrenderRules } from "../models/game";
 
 const surrenderToString = new Map<SurrenderRules, string>([
@@ -14,15 +14,16 @@ const stringToSurrender = new Map<string, SurrenderRules>([
     ["Late", SurrenderRules.Late]
 ]);
 
-export function RulesComponent(props: {rules: Rules, submit: (rules: Rules) => void}) {
+export function RulesComponent(props: {rules: Rules, money: {starting: number, minimum: number}, submit: (rules: Rules, startingMoney: number) => void}) {
     const surrenderRules = surrenderToString.get(props.rules.surrenderRules) as string;
     const [rules, setRules] = useState({...props.rules});
+    const [startingMoney, setMoney] = useState(props.money.starting);
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         props.submit({
            ...rules,
            surrenderRules: stringToSurrender.get(surrenderRules) as SurrenderRules
-        });
+        }, startingMoney);
     };
     const eventAsInt = (f: (rules: Rules, i: number) => void): ((event: React.FormEvent<HTMLInputElement>) => void) => {
         return (event: React.FormEvent<HTMLInputElement>) => {
@@ -41,6 +42,10 @@ export function RulesComponent(props: {rules: Rules, submit: (rules: Rules) => v
         const newRules = {...rules};
         newRules.surrenderRules = stringToSurrender.get(event.currentTarget.value) as SurrenderRules;
         setRules(newRules);
+    };
+    const moneyChanged = (event: React.FormEvent<HTMLInputElement>) => {
+        const money = parseInt(event.currentTarget.value);
+        setMoney(money);
     };
 
     return (
@@ -67,6 +72,15 @@ export function RulesComponent(props: {rules: Rules, submit: (rules: Rules) => v
                 </div>
                 <div>
                     <label>Number of Splits: <input type="number" min="0" value={rules.numberOfSplits} onChange={onNumberOfSplits}/></label>
+                </div>
+                <div>
+                    <label>Starting Money: $<input 
+                        type="number" 
+                        min={props.money.minimum} 
+                        value={startingMoney} 
+                        onChange={(event) => moneyChanged(event)}
+                        step={10}>
+                    </input></label>
                 </div>
                 {/*<div>
                     <label>Surrender Rules: 
