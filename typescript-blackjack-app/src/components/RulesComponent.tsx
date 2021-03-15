@@ -14,10 +14,15 @@ const stringToSurrender = new Map<string, SurrenderRules>([
     ["Late", SurrenderRules.Late]
 ]);
 
-export function RulesComponent(props: {rules: Rules, money: {starting: number, minimum: number}, submit: (rules: Rules, startingMoney: number) => void}) {
+export function RulesComponent(props: {
+        rules: Rules, 
+        money: {starting: number, minimum: number}, 
+        submit: (rules: Rules, startingMoney: number, name: string) => void}) 
+    {
     const surrenderRules = surrenderToString.get(props.rules.surrenderRules) as string;
     const [rules, setRules] = useState({...props.rules});
     const [startingMoney, setMoney] = useState(props.money.starting);
+    const [name, setName] = useState('Name');
     const startButton = useRef<HTMLInputElement>(null);
     useEffect(() => {
         startButton.current?.focus();
@@ -27,7 +32,7 @@ export function RulesComponent(props: {rules: Rules, money: {starting: number, m
         props.submit({
            ...rules,
            surrenderRules: stringToSurrender.get(surrenderRules) as SurrenderRules
-        }, startingMoney);
+        }, startingMoney, name);
     };
     const eventAsInt = (f: (rules: Rules, i: number) => void): ((event: React.FormEvent<HTMLInputElement>) => void) => {
         return (event: React.FormEvent<HTMLInputElement>) => {
@@ -51,13 +56,18 @@ export function RulesComponent(props: {rules: Rules, money: {starting: number, m
         const money = parseInt(event.currentTarget.value);
         setMoney(money);
     };
-
+    const onNameChange = (event: React.FormEvent<HTMLInputElement>) => {
+        setName(event.currentTarget.value);
+    }
     return (
         <>
             <h1>Game Rules</h1>
             <form onSubmit={onSubmit}>
                 <div>
                     <input type="submit" value="Begin" ref={startButton}/>
+                </div>
+                <div>
+                    <label>Player Name: <input value={name} onChange={onNameChange}></input></label>
                 </div>
                 <div>
                     <label>Minimum Bet: <input type="number" step="10" min="0" value={rules.minimumBet} onChange={onMinimumBet}/></label>

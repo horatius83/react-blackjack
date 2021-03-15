@@ -83,12 +83,13 @@ export function GameComponent() {
     setGame(newGame);
   }
 
-  const updateRules = (rules: blackjack.Rules, startingMoney: number) => {
+  const updateRules = (rules: blackjack.Rules, startingMoney: number, name: string) => {
     if(game.state === blackjack.GameState.Init) {
       setRules({...rules});  
       game.players.forEach(p => p.money = startingMoney);
       const newGame = blackjack.newGame(game.players, rules);
       newGame.state = blackjack.GameState.PlaceBets;
+      game.players[0].name = name;
       setGame(newGame);
     }
   };
