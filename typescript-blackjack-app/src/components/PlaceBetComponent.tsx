@@ -8,6 +8,8 @@ export function PlaceBetComponent(props: {
 }) {
     const [bet, setBet] = useState(props.previousBet);
     const placeBetButton = useRef<HTMLButtonElement>(null);
+    const cowboyEmoji = '\u{1F920}';
+    const moneyBagEmoji = '\u{1F4B0}';
     useEffect(() => {
         placeBetButton?.current?.focus();
     },[]);
@@ -24,6 +26,18 @@ export function PlaceBetComponent(props: {
     return (
         <>
             <h1>Place Bet</h1>
+            <div>
+                <span className="card">{cowboyEmoji}</span>
+                <span className="card">{moneyBagEmoji}</span>
+            </div>
+            <div>
+                <span className="card">{moneyBagEmoji}</span>
+                <span className="card">{cowboyEmoji}</span>
+            </div>
+            <div>
+                <span className="card">{cowboyEmoji}</span>
+                <span className="card">{moneyBagEmoji}</span>
+            </div>
             <div>Bet: $
                 <input 
                 type="number" 

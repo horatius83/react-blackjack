@@ -6,7 +6,7 @@ import Player, { newPlayer } from '../models/player';
 import { Hand } from '../models/hand';
 import { RulesComponent } from './RulesComponent';
 import { GameOverComponent } from './GameOverComponent';
-import { PlaceBetComponent } from './BetComponent';
+import { PlaceBetComponent } from './PlaceBetComponent';
 
 const hit = (hand: Hand, game: blackjack.Game, rules: blackjack.Rules, setGame: (game: React.SetStateAction<blackjack.Game>) => void) => {
   console.log('hit');
