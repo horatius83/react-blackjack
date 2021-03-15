@@ -64,9 +64,6 @@ export function RulesComponent(props: {
             <h1>Game Rules</h1>
             <form onSubmit={onSubmit}>
                 <div>
-                    <input type="submit" value="Begin" ref={startButton}/>
-                </div>
-                <div>
                     <label>Player Name: <input value={name} onChange={onNameChange}></input></label>
                 </div>
                 <div>
@@ -105,6 +102,9 @@ export function RulesComponent(props: {
                         </select>
                     </label>
                 </div>*/}
+                <div>
+                    <input type="submit" value="Begin" ref={startButton}/>
+                </div>
             </form>
         </>
     );
