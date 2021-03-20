@@ -90,10 +90,9 @@ describe('shouldShowSplit', () => {
         const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Queen, suit: Suit.Hearts}];
         const playerCards: Array<Card> = [{rank: Rank.Eight, suit: Suit.Clubs}, {rank: Rank.Eight, suit: Suit.Spades}];
         const game = createGame(dealerCards, playerCards);
-        const rules = createRules();
         const hand = game.players[0].hands[0];
         const player = game.players[0];
-        player.money = hand.bet;
+        player.money = hand.bet - 1;
 
         const sh = shouldShowSplit(game, hand);
 
