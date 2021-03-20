@@ -140,7 +140,7 @@ describe('stay', () => {
 
             game.players.forEach(p => p.hands.forEach(h => stay(h, game, rules)));
                
-            expect(player.money).toBe(initiallMoney + 50);
+            expect(player.money).toBe(initiallMoney + (hand.bet * 2) - (hand.bet / 2));
         });
         test('if you lose the hand but the dealer has 21 you should not lose your bet', () => {
             const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Jack, suit: Suit.Hearts}];
@@ -155,7 +155,7 @@ describe('stay', () => {
 
             game.players.forEach(p => p.hands.forEach(h => stay(h, game, rules)));
                
-            expect(player.money).toBe(initiallMoney - 100);
+            expect(player.money).toBe(initiallMoney + hand.bet);
         });
         test('if you lose the hand and you have insurance then you should lose 1.5x your bet', () => {
             const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Nine, suit: Suit.Hearts}];
@@ -170,7 +170,7 @@ describe('stay', () => {
 
             game.players.forEach(p => p.hands.forEach(h => stay(h, game, rules)));
                
-            expect(player.money).toBe(initiallMoney - 250);
+            expect(player.money).toBe(initiallMoney - hand.bet - (hand.bet / 2));
         });
         test('if no insurance then make sure bet is correct', () => {
             const dealerCards: Array<Card> = [{rank: Rank.Ace, suit: Suit.Spades}, {rank: Rank.Nine, suit: Suit.Hearts}];
@@ -184,7 +184,7 @@ describe('stay', () => {
 
             game.players.forEach(p => p.hands.forEach(h => stay(h, game, rules)));
                
-            expect(player.money).toBe(initiallMoney - 200);
+            expect(player.money).toBe(initiallMoney - hand.bet);
         });
     });
 });
